@@ -29,32 +29,23 @@ Bring Google Search Console data, SEO insights, and AI-powered recommendations d
 - Node.js 18 or higher
 - [Rampify account](https://www.rampify.dev) (free to start)
 
-### Install Dependencies
+### Install from Source
+
+> **Note:** npm package coming soon. For now, install from source:
 
 ```bash
-cd packages/mcp-server
+# Clone the repository
+git clone https://github.com/rampify-dev/mcp-server.git
+cd mcp-server
+
+# Install dependencies
 npm install
-```
 
-### Configure Environment
-
-Create a `.env` file (or copy `.env.example`):
-
-```bash
-BACKEND_API_URL=http://localhost:3000
-# Or for production:
-# BACKEND_API_URL=https://your-domain.com
-
-# Optional
-CACHE_TTL=3600
-LOG_LEVEL=info
-```
-
-### Build
-
-```bash
+# Build
 npm run build
 ```
+
+The compiled MCP server will be in `build/index.js` - use this path in your configuration below.
 
 ## Usage
 
@@ -76,13 +67,15 @@ Before configuring the MCP server, get your API key:
 ```bash
 cd /path/to/your/project
 claude mcp add --scope local rampify "node" \
-  "/path/to/rampify/packages/mcp-server/build/index.js" \
+  "/path/to/mcp-server/build/index.js" \
   -e BACKEND_API_URL=https://www.rampify.dev \
   -e API_KEY=sk_live_your_api_key_here \
   -e SEO_CLIENT_DOMAIN=your-domain.com
 
 # Reload your IDE window
 ```
+
+Replace `/path/to/mcp-server` with where you cloned the repo (e.g., `/Users/yourname/mcp-server`).
 
 Now you can use MCP tools **without specifying domain**:
 - `get_page_seo` - Automatically uses your project's domain
@@ -95,12 +88,14 @@ For global access across all projects (must specify domain in each request):
 
 ```bash
 claude mcp add --scope user rampify "node" \
-  "/path/to/rampify/packages/mcp-server/build/index.js" \
+  "/path/to/mcp-server/build/index.js" \
   -e BACKEND_API_URL=https://www.rampify.dev \
   -e API_KEY=sk_live_your_api_key_here
 
 # Reload your IDE window
 ```
+
+Replace `/path/to/mcp-server` with where you cloned the repo.
 
 ### Manual Configuration (Cursor)
 
@@ -112,7 +107,7 @@ Add to your Cursor settings UI or `~/.cursor/config.json`:
     "rampify": {
       "command": "node",
       "args": [
-        "/absolute/path/to/rampify/packages/mcp-server/build/index.js"
+        "/absolute/path/to/mcp-server/build/index.js"
       ],
       "env": {
         "BACKEND_API_URL": "https://www.rampify.dev",
@@ -123,6 +118,8 @@ Add to your Cursor settings UI or `~/.cursor/config.json`:
   }
 }
 ```
+
+Replace `/absolute/path/to/mcp-server` with where you cloned the repo.
 
 ### Manual Configuration (Claude Code)
 
@@ -134,7 +131,7 @@ Add to your Claude Code MCP settings:
     "rampify": {
       "command": "node",
       "args": [
-        "/absolute/path/to/rampify/packages/mcp-server/build/index.js"
+        "/absolute/path/to/mcp-server/build/index.js"
       ],
       "env": {
         "BACKEND_API_URL": "https://www.rampify.dev",
@@ -146,7 +143,7 @@ Add to your Claude Code MCP settings:
 }
 ```
 
-**Important:** Replace `/absolute/path/to/` with the actual path on your machine.
+**Important:** Replace `/absolute/path/to/mcp-server` with where you cloned the repo (e.g., `/Users/yourname/mcp-server`).
 
 ---
 
