@@ -1,5 +1,7 @@
 # Rampify MCP Server
 
+[![npm version](https://img.shields.io/npm/v/@rampify/mcp-server.svg)](https://www.npmjs.com/package/@rampify/mcp-server)
+[![npm downloads](https://img.shields.io/npm/dm/@rampify/mcp-server.svg)](https://www.npmjs.com/package/@rampify/mcp-server)
 [![Website](https://img.shields.io/badge/Website-rampify.dev-blue)](https://www.rampify.dev)
 [![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.rampify.dev/docs/mcp-server)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -29,23 +31,23 @@ Bring Google Search Console data, SEO insights, and AI-powered recommendations d
 - Node.js 18 or higher
 - [Rampify account](https://www.rampify.dev) (free to start)
 
-### Install from Source
+### Install via npm (Recommended)
 
-> **Note:** npm package coming soon. For now, install from source:
+```bash
+npm install -g @rampify/mcp-server
+```
+
+### Alternative: Install from Source
 
 ```bash
 # Clone the repository
 git clone https://github.com/rampify-dev/mcp-server.git
 cd mcp-server
 
-# Install dependencies
+# Install dependencies and build
 npm install
-
-# Build
 npm run build
 ```
-
-The compiled MCP server will be in `build/index.js` - use this path in your configuration below.
 
 ## Usage
 
@@ -66,16 +68,13 @@ Before configuring the MCP server, get your API key:
 
 ```bash
 cd /path/to/your/project
-claude mcp add --scope local rampify "node" \
-  "/path/to/mcp-server/build/index.js" \
+claude mcp add --scope local rampify npx @rampify/mcp-server \
   -e BACKEND_API_URL=https://www.rampify.dev \
   -e API_KEY=sk_live_your_api_key_here \
   -e SEO_CLIENT_DOMAIN=your-domain.com
 
 # Reload your IDE window
 ```
-
-Replace `/path/to/mcp-server` with where you cloned the repo (e.g., `/Users/yourname/mcp-server`).
 
 Now you can use MCP tools **without specifying domain**:
 - `get_page_seo` - Automatically uses your project's domain
@@ -87,15 +86,12 @@ Now you can use MCP tools **without specifying domain**:
 For global access across all projects (must specify domain in each request):
 
 ```bash
-claude mcp add --scope user rampify "node" \
-  "/path/to/mcp-server/build/index.js" \
+claude mcp add --scope user rampify npx @rampify/mcp-server \
   -e BACKEND_API_URL=https://www.rampify.dev \
   -e API_KEY=sk_live_your_api_key_here
 
 # Reload your IDE window
 ```
-
-Replace `/path/to/mcp-server` with where you cloned the repo.
 
 ### Manual Configuration (Cursor)
 
