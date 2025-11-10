@@ -1,13 +1,33 @@
 # Rampify MCP Server
 
+[![Website](https://img.shields.io/badge/Website-rampify.dev-blue)](https://www.rampify.dev)
+[![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.rampify.dev/docs/mcp-server)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Real-time SEO intelligence for AI coding tools (Cursor, Claude Code).
+
+**[Get Started with Rampify →](https://www.rampify.dev)**
+
+Bring Google Search Console data, SEO insights, and AI-powered recommendations directly into your editor. No context switching, no delays.
+
+---
+
+## Why Rampify?
+
+- 🚀 **Real-time SEO intelligence** in your editor (Cursor, Claude Code)
+- 🔍 **Google Search Console integration** - See clicks, impressions, rankings
+- 🤖 **AI-powered recommendations** - Fix issues with one command
+- 📊 **Pre-deployment checks** - Catch SEO issues before they go live
+- 🎯 **Zero context switching** - Stay in your workflow
+
+**[Learn more →](https://www.rampify.dev)**
 
 ## Installation
 
 ### Prerequisites
 
 - Node.js 18 or higher
-- Backend API running (locally or deployed)
+- [Rampify account](https://www.rampify.dev) (free to start)
 
 ### Install Dependencies
 
@@ -37,6 +57,17 @@ npm run build
 ```
 
 ## Usage
+
+### Get Your API Key
+
+Before configuring the MCP server, get your API key:
+
+1. **[Sign up for Rampify](https://www.rampify.dev)** (free to start)
+2. Go to your [Rampify dashboard](https://www.rampify.dev)
+3. Navigate to **Settings → API Keys**
+4. Click **"Generate New Key"**
+5. Copy the key (starts with `sk_live_...`)
+6. Use it in the configuration below
 
 ### Quick Setup for a Project (Claude CLI)
 
@@ -765,9 +796,16 @@ Every response includes explicit `source` and `fetched_from` fields:
 
 ## Support
 
-For issues or questions:
-- GitHub Issues: https://github.com/rampify/mcp-server/issues
-- Documentation: https://www.rampify.dev/docs/mcp-server
+Need help?
+- **[Documentation](https://www.rampify.dev/docs/mcp-server)** - Complete guides and tutorials
+- **[GitHub Issues](https://github.com/rampify-dev/mcp-server/issues)** - Report bugs or request features
+- **[Rampify Dashboard](https://www.rampify.dev)** - Manage your sites and API keys
+
+## Learn More
+
+- **[What is Rampify?](https://www.rampify.dev)** - Product overview
+- **[MCP Server Guide](https://www.rampify.dev/docs/mcp-server)** - Detailed documentation
+- **[Blog](https://www.rampify.dev/blog)** - SEO tips and product updates
 
 ## License
 
