@@ -7,17 +7,24 @@
   "bin": {
     "rampify-mcp": "build/index.js"
   },
-  "files": [
-    "build/**/*",
-    "README.md",
-    "LICENSE"
-  ],
   "scripts": {
     "build": "tsc && chmod +x build/index.js",
     "dev": "tsc && node build/index.js",
     "watch": "tsc --watch",
-    "test": "echo \"Tests coming soon\" && exit 0"
+    "test": "echo \"Tests coming soon\" && exit 0",
+    "prepublishOnly": "npm run build && npm pack --dry-run"
   },
+  "files": [
+    "build/index.js",
+    "build/tools/get-page-seo.js",
+    "build/tools/get-issues.js",
+    "build/tools/crawl-site.js",
+    "build/tools/generate-schema.js",
+    "build/tools/generate-meta.js",
+    "build/utils/",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "mcp",
     "seo",
@@ -28,14 +35,6 @@
   ],
   "author": "Rampify",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rampify-dev/mcp-server.git"
-  },
-  "homepage": "https://www.rampify.dev/docs/mcp-server",
-  "bugs": {
-    "url": "https://github.com/rampify-dev/mcp-server/issues"
-  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0",
     "axios": "^1.6.2",

@@ -7,6 +7,7 @@ import { getIssues, GetIssuesInput } from './get-issues.js';
 import { crawlSite, CrawlSiteInput } from './crawl-site.js';
 import { generateSchema, GenerateSchemaInput } from './generate-schema.js';
 import { generateMeta, GenerateMetaInput } from './generate-meta.js';
+import { getSecurityContext, GetSecurityContextInput } from './get-security-context.js';
 
 export const tools = {
   get_page_seo: {
@@ -160,6 +161,26 @@ export const tools = {
           },
         },
         required: ['url_path'],
+      },
+    },
+  },
+
+  // PRIVATE TOOL: Not published to npm (excluded via package.json "files" whitelist)
+  get_security_context: {
+    handler: getSecurityContext,
+    schema: GetSecurityContextInput,
+    metadata: {
+      name: 'get_security_context',
+      description: 'Get security analysis for a site (homepage scan only). Returns security score, detected issues (headers, SSL, exposed files, third-party scripts), and actionable remediation steps. PRIVATE BETA.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com")',
+          },
+        },
+        required: ['domain'],
       },
     },
   },
