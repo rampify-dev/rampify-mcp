@@ -16,6 +16,7 @@ Bring Google Search Console data, SEO insights, and AI-powered recommendations d
 
 - 🚀 **Real-time SEO intelligence** in your editor (Cursor, Claude Code)
 - 🔍 **Google Search Console integration** - See clicks, impressions, rankings
+- 📝 **Content strategy insights** - Discover what to write next based on real search data
 - 🤖 **AI-powered recommendations** - Fix issues with one command
 - 📊 **Pre-deployment checks** - Catch SEO issues before they go live
 - 🎯 **Zero context switching** - Stay in your workflow
@@ -56,11 +57,11 @@ Before configuring the MCP server, get your API key:
 
 ```bash
 cd /path/to/your/project
-claude mcp add --scope local rampify "npx" \
-  "-y" "@rampify/mcp-server" \
-  -e BACKEND_API_URL=https://www.rampify.dev \
-  -e API_KEY=sk_live_your_api_key_here \
-  -e SEO_CLIENT_DOMAIN=your-domain.com
+claude mcp add -s local -t stdio \
+  --env BACKEND_API_URL=https://www.rampify.dev \
+  --env API_KEY=sk_live_your_api_key_here \
+  --env SEO_CLIENT_DOMAIN=your-domain.com \
+  rampify -- npx -y @rampify/mcp-server
 
 # Reload your IDE window
 ```
@@ -75,10 +76,10 @@ Now you can use MCP tools **without specifying domain**:
 For global access across all projects (must specify domain in each request):
 
 ```bash
-claude mcp add --scope user rampify "npx" \
-  "-y" "@rampify/mcp-server" \
-  -e BACKEND_API_URL=https://www.rampify.dev \
-  -e API_KEY=sk_live_your_api_key_here
+claude mcp add --scope user rampify npx \
+  -y @rampify/mcp-server \
+  --env BACKEND_API_URL=https://www.rampify.dev \
+  --env API_KEY=sk_live_your_api_key_here
 
 # Reload your IDE window
 ```
@@ -195,6 +196,14 @@ crawl_site({ domain: "example.com" })
 4. "Crawl my site" (refresh)
 ```
 
+**Content Planning:**
+```
+1. "What should I write next?" (get GSC insights)
+2. Review top performing pages and queries
+3. Check query opportunities (CTR, rankings, gaps)
+4. Create content targeting recommended topics
+```
+
 ---
 
 ## Available Tools
@@ -205,9 +214,10 @@ crawl_site({ domain: "example.com" })
 |------|---------|-------------|
 | `get_page_seo` | Get SEO data for a specific page | Analyzing individual pages, checking performance |
 | `get_issues` | Get all SEO issues with health score | Site-wide audits, finding problems |
-| `crawl_site` | Trigger fresh crawl | After deployments, to refresh data |
-| `generate_schema` | Auto-generate structured data | Adding schema.org JSON-LD to pages |
+| `get_gsc_insights` | Get GSC performance data with content recommendations | Discovering what to write next, finding ranking opportunities |
 | `generate_meta` | Generate optimized meta tags | Fixing title/description issues, improving CTR |
+| `generate_schema` | Auto-generate structured data | Adding schema.org JSON-LD to pages |
+| `crawl_site` | Trigger fresh crawl | After deployments, to refresh data |
 
 ---
 
@@ -333,7 +343,170 @@ get_issues({ domain: "example.com" })
 
 ---
 
-### 3. `crawl_site`
+### 3. `get_gsc_insights` ⭐ NEW
+
+Get Google Search Console performance data with AI-powered content recommendations. **Discover what to write next based on real search data.**
+
+**Parameters:**
+- `domain` (optional): Site domain (uses `SEO_CLIENT_DOMAIN` if not provided)
+- `period` (optional): Time period for analysis - `7d`, `28d`, or `90d` (default: `28d`)
+- `include_recommendations` (optional): Include AI-powered content recommendations (default: `true`)
+
+**Examples:**
+
+```
+Ask Claude: "What should I write next?"
+# Uses SEO_CLIENT_DOMAIN, analyzes 28-day period
+
+Ask Claude: "Show me my top performing pages from last week"
+get_gsc_insights({ period: "7d" })
+
+Ask Claude: "What queries am I ranking for?"
+get_gsc_insights({ domain: "example.com", period: "28d" })
+```
+
+**What it provides:**
+
+**1. Performance Summary**
+- Total clicks, impressions, average position, CTR
+- Compare performance across time periods
+
+**2. Top Performing Pages**
+- Top 20 pages by clicks
+- Each with performance metrics and top queries
+- See what content resonates with your audience
+
+**3. Query Opportunities** (4 types automatically detected)
+- **Improve CTR**: High impressions (100+) but low CTR (<2%) → Optimize meta tags
+- **Improve Ranking**: Position 6-20 → Push to page 1 with content improvements
+- **Keyword Cannibalization**: Multiple pages competing for same query → Consolidate content
+- **Keyword Gap**: High position (<5) but low volume → Expand content to target related queries
+
+**4. AI-Powered Content Recommendations**
+- High-priority topics based on search data
+- Target queries for each recommendation
+- Prioritized by potential impact (high/medium/low)
+
+**5. Query Clustering**
+- Groups related queries into topic themes
+- Identifies topic authority opportunities
+- Suggests comprehensive content pieces
+
+**Response includes:**
+
+```json
+{
+  "period": {
+    "start": "2025-10-27",
+    "end": "2025-11-24",
+    "days": 28
+  },
+  "summary": {
+    "total_clicks": 1247,
+    "total_impressions": 45382,
+    "avg_position": 12.3,
+    "avg_ctr": 0.027
+  },
+  "top_pages": [
+    {
+      "url": "/blog/context-driven-development",
+      "clicks": 324,
+      "impressions": 8920,
+      "avg_position": 3.2,
+      "ctr": 0.036,
+      "top_queries": [
+        {
+          "query": "context driven development",
+          "clicks": 156,
+          "position": 1.2
+        }
+      ]
+    }
+  ],
+  "opportunities": [
+    {
+      "query": "seo tools for developers",
+      "impressions": 3450,
+      "clicks": 12,
+      "position": 5.2,
+      "ctr": 0.003,
+      "opportunity_type": ["improve_ctr"],
+      "recommendation": "Improve CTR for 'seo tools for developers' - getting 3,450 impressions but only 12 clicks (0.3% CTR). Optimize meta title/description."
+    }
+  ],
+  "content_recommendations": [
+    {
+      "title": "Optimize meta tags for high-impression queries",
+      "description": "You're appearing in search results but users aren't clicking...",
+      "priority": "high",
+      "based_on": "high_impression_low_ctr",
+      "queries": ["seo tools for developers", "nextjs seo best practices"]
+    }
+  ],
+  "meta": {
+    "total_queries": 247,
+    "total_pages_with_data": 18,
+    "data_freshness": "GSC data has 2-3 days delay"
+  }
+}
+```
+
+**Use cases:**
+
+**Content Strategy:**
+```
+User: "What should I write next?"
+→ Get top 3 content recommendations with target queries
+→ See which topics have proven search interest
+→ Discover keyword gaps to expand existing content
+```
+
+**Performance Optimization:**
+```
+User: "Which pages should I optimize?"
+→ Find high-impression, low-CTR pages
+→ Get specific meta tag improvement suggestions
+→ See pages stuck on page 2 (quick wins)
+```
+
+**Keyword Research:**
+```
+User: "What queries am I ranking for?"
+→ See all queries with impressions/clicks data
+→ Identify cannibalization issues
+→ Find related queries to expand content
+```
+
+**Topic Authority:**
+```
+User: "What topics should I create comprehensive guides on?"
+→ Get query clusters (related searches)
+→ See opportunities for consolidating authority
+→ Discover emerging topic trends
+```
+
+**When to use:**
+- Weekly content planning sessions
+- Quarterly content strategy reviews
+- After publishing new content (check performance)
+- When looking for low-hanging fruit (page 2 rankings)
+- Before creating new content (avoid cannibalization)
+
+**Requirements:**
+- Google Search Console must be connected (connect in Rampify dashboard)
+- Site must have some search traffic (impressions)
+- GSC data synced (happens automatically weekly, or trigger manually)
+
+**Pro tips:**
+- Start with 28-day period for balanced view (not too recent, not too old)
+- Use 7-day period to track recent changes
+- Use 90-day period for seasonal trends
+- Combine with `generate_meta` to optimize high-opportunity pages
+- Run after GSC sync completes for latest data
+
+---
+
+### 4. `crawl_site`
 
 Trigger a fresh site crawl and analysis. This is an **active operation** that fetches and analyzes all pages.
 
@@ -374,7 +547,7 @@ crawl_site({ domain: "example.com" })
 
 ---
 
-### 4. `generate_schema`
+### 5. `generate_schema`
 
 Auto-generate structured data (schema.org JSON-LD) for any page. Detects page type and generates appropriate schema with validation.
 
@@ -452,7 +625,7 @@ Ask Claude: "Add structured data to this page"
 
 ---
 
-### 5. `generate_meta` ⭐ Enhanced with Client Profile Context
+### 6. `generate_meta` ⭐ Enhanced with Client Profile Context
 
 Generate optimized meta tags (title, description, Open Graph tags) for a page. **Now uses your client profile** to generate highly personalized, business-aware meta tags that align with your target audience, brand voice, and competitive positioning.
 
@@ -759,9 +932,10 @@ Every response includes explicit `source` and `fetched_from` fields:
 ### Phase 1: Core Tools (Complete ✅)
 - ✅ `get_page_seo` - Get SEO data for a specific page
 - ✅ `get_issues` - Get all site issues with health score
-- ✅ `crawl_site` - Trigger fresh site crawl
-- ✅ `generate_schema` - Auto-generate structured data (Article, Product, etc.)
+- ✅ `get_gsc_insights` - Get GSC performance data with content recommendations ⭐ NEW
 - ✅ `generate_meta` - AI-powered title and meta description generation
+- ✅ `generate_schema` - Auto-generate structured data (Article, Product, etc.)
+- ✅ `crawl_site` - Trigger fresh site crawl
 
 ### Phase 2: Workflow & Optimization Tools (Planned 📋)
 - 📋 `suggest_internal_links` - Internal linking recommendations
@@ -779,7 +953,7 @@ Every response includes explicit `source` and `fetched_from` fields:
 
 Need help?
 - **[Documentation](https://www.rampify.dev/docs/mcp-server)** - Complete guides and tutorials
-- **[GitHub Issues](https://github.com/rampify-dev/mcp-server/issues)** - Report bugs or request features
+- **[GitHub Issues](https://github.com/rampify-dev/rampify-mcp/issues)** - Report bugs or request features
 - **[Rampify Settings](https://www.rampify.dev/settings/api-keys)** - Manage your sites and API keys
 
 ## Learn More
