@@ -32,12 +32,12 @@ Bring Google Search Console data, SEO insights, and AI-powered recommendations d
 
 ## Why Rampify?
 
-- 🚀 **Real-time SEO intelligence** in your editor (Cursor, Claude Code)
-- 🔍 **Google Search Console integration** - See clicks, impressions, rankings
-- 📝 **Content strategy insights** - Discover what to write next based on real search data
-- 🤖 **AI-powered recommendations** - Fix issues with one command
-- 📊 **Pre-deployment checks** - Catch SEO issues before they go live
-- 🎯 **Zero context switching** - Stay in your workflow
+- **Real-time SEO intelligence** in your editor (Cursor, Claude Code)
+- **Google Search Console integration** - See clicks, impressions, rankings
+- **Content strategy insights** - Discover what to write next based on real search data
+- **AI-powered recommendations** - Fix issues with one command
+- **Pre-deployment checks** - Catch SEO issues before they go live
+- **Zero context switching** - Stay in your workflow
 
 **[Learn more →](https://www.rampify.dev)**
 
@@ -106,7 +106,7 @@ claude mcp add --scope user rampify npx \
 
 Add to your Cursor settings UI or `~/.cursor/config.json`:
 
-```json
+```jsonc
 {
   "mcpServers": {
     "rampify": {
@@ -116,8 +116,13 @@ Add to your Cursor settings UI or `~/.cursor/config.json`:
         "@rampify/mcp-server"
       ],
       "env": {
+        // Always use production API
         "BACKEND_API_URL": "https://www.rampify.dev",
+
+        // Get your API key from https://www.rampify.dev/settings/api-keys
         "API_KEY": "sk_live_your_api_key_here",
+
+        // Optional: Set default domain for this project
         "SEO_CLIENT_DOMAIN": "your-domain.com"
       }
     }
@@ -129,7 +134,7 @@ Add to your Cursor settings UI or `~/.cursor/config.json`:
 
 Add to your Claude Code MCP settings:
 
-```json
+```jsonc
 {
   "mcpServers": {
     "rampify": {
@@ -139,8 +144,13 @@ Add to your Claude Code MCP settings:
         "@rampify/mcp-server"
       ],
       "env": {
+        // Always use production API
         "BACKEND_API_URL": "https://www.rampify.dev",
+
+        // Get your API key from https://www.rampify.dev/settings/api-keys
         "API_KEY": "sk_live_your_api_key_here",
+
+        // Optional: Set default domain for this project
         "SEO_CLIENT_DOMAIN": "your-domain.com"
       }
     }
@@ -302,21 +312,29 @@ SEO_CLIENT_DOMAIN=localhost:3000
 4. **Deploy when clean!**
 
 **What gets analyzed locally:**
-- ✅ Title tags
-- ✅ Meta descriptions
-- ✅ Heading structure (H1, H2, H3)
-- ✅ Images and alt text
-- ✅ Schema.org structured data
-- ✅ Internal/external links
-- ❌ Search performance (GSC data not available for local)
+- Title tags
+- Meta descriptions
+- Heading structure (H1, H2, H3)
+- Images and alt text
+- Schema.org structured data
+- Internal/external links
+- Search performance (not available for local - GSC data only exists for production)
 
 **Response format:**
-```json
+```jsonc
 {
+  // Indicates data source: local_dev_server, production_database, or direct_content
   "source": "local_dev_server",
+
+  // Exact URL that was analyzed
   "fetched_from": "http://localhost:3000/blog/new-post",
+
   "url": "http://localhost:3000/blog/new-post",
+
+  // Array of detected issues with severity and recommendations
   "issues": [...],
+
+  // AI-generated summary and recommendations
   "ai_summary": "**Local Development Analysis**..."
 }
 ```
@@ -361,7 +379,7 @@ get_issues({ domain: "example.com" })
 
 ---
 
-### 3. `get_gsc_insights` ⭐ NEW
+### 3. `get_gsc_insights` (NEW)
 
 Get Google Search Console performance data with AI-powered content recommendations. **Discover what to write next based on real search data.**
 
@@ -412,7 +430,7 @@ get_gsc_insights({ domain: "example.com", period: "28d" })
 
 **Response includes:**
 
-```json
+```jsonc
 {
   "period": {
     "start": "2025-10-27",
@@ -420,6 +438,7 @@ get_gsc_insights({ domain: "example.com", period: "28d" })
     "days": 28
   },
   "summary": {
+    // Overall performance metrics for the time period
     "total_clicks": 1247,
     "total_impressions": 45382,
     "avg_position": 12.3,
@@ -427,6 +446,7 @@ get_gsc_insights({ domain: "example.com", period: "28d" })
   },
   "top_pages": [
     {
+      // Top performing page with its metrics
       "url": "/blog/context-driven-development",
       "clicks": 324,
       "impressions": 8920,
@@ -434,6 +454,7 @@ get_gsc_insights({ domain: "example.com", period: "28d" })
       "ctr": 0.036,
       "top_queries": [
         {
+          // What query this page ranks for
           "query": "context driven development",
           "clicks": 156,
           "position": 1.2
@@ -443,25 +464,37 @@ get_gsc_insights({ domain: "example.com", period: "28d" })
   ],
   "opportunities": [
     {
+      // Query opportunity with actionable recommendation
       "query": "seo tools for developers",
       "impressions": 3450,
       "clicks": 12,
       "position": 5.2,
       "ctr": 0.003,
+
+      // Type: improve_ctr, improve_ranking, cannibalization, or keyword_gap
       "opportunity_type": ["improve_ctr"],
+
       "recommendation": "Improve CTR for 'seo tools for developers' - getting 3,450 impressions but only 12 clicks (0.3% CTR). Optimize meta title/description."
     }
   ],
   "content_recommendations": [
     {
+      // AI-powered content suggestions based on real data
       "title": "Optimize meta tags for high-impression queries",
       "description": "You're appearing in search results but users aren't clicking...",
+
+      // Priority: high, medium, or low
       "priority": "high",
+
+      // What data this is based on
       "based_on": "high_impression_low_ctr",
+
+      // Target queries for this recommendation
       "queries": ["seo tools for developers", "nextjs seo best practices"]
     }
   ],
   "meta": {
+    // Additional context about the data
     "total_queries": 247,
     "total_pages_with_data": 18,
     "data_freshness": "GSC data has 2-3 days delay"
@@ -617,21 +650,31 @@ Ask Claude: "Add structured data to this page"
 - Improving CTR with enhanced search results
 
 **Example output:**
-```json
+```jsonc
 {
+  // Automatically detected from URL patterns and content
   "detected_page_type": "Article",
+
+  // What schemas make sense for this page type
   "recommended_schemas": ["Article", "BreadcrumbList"],
+
   "schemas": [
     {
       "type": "Article",
+
+      // Ready-to-use JSON-LD structured data
       "json_ld": { ... },
+
       "validation": {
         "valid": false,
+
+        // Things to fix before deploying
         "warnings": ["Replace placeholder values with actual data"]
       }
     }
   ],
   "implementation": {
+    // Framework-specific instructions
     "where_to_add": "In your page component's metadata",
     "code_snippet": "// Next.js code here",
     "instructions": "1. Add code to page.tsx..."
@@ -643,7 +686,7 @@ Ask Claude: "Add structured data to this page"
 
 ---
 
-### 6. `generate_meta` ⭐ Enhanced with Client Profile Context
+### 6. `generate_meta` (Enhanced with Client Profile Context)
 
 Generate optimized meta tags (title, description, Open Graph tags) for a page. **Now uses your client profile** to generate highly personalized, business-aware meta tags that align with your target audience, brand voice, and competitive positioning.
 
@@ -653,7 +696,7 @@ Generate optimized meta tags (title, description, Open Graph tags) for a page. *
 - `include_og_tags` (optional): Include Open Graph tags for social sharing (default: true)
 - `framework` (optional): Framework format for code snippet - `nextjs`, `html`, `astro`, or `remix` (default: "nextjs")
 
-**✨ NEW: Client Profile Integration**
+**NEW: Client Profile Integration**
 
 The tool automatically fetches your client profile and uses context like:
 - **Target keywords** → Ensures they appear in title/description
@@ -731,22 +774,30 @@ Description: Built for developers: API-first project management with real-time s
 
 If your profile is incomplete, you'll get helpful warnings:
 
-```json
+```jsonc
 {
   "profile_warnings": [
-    "⚠️ Target audience not set - recommendations will be generic. Add this in your business profile for better results.",
-    "⚠️ No target keywords set - can't optimize for ranking goals. Add keywords in your business profile.",
-    "💡 Add your differentiators in the business profile to make meta descriptions more compelling.",
-    "💡 Set your brand voice in the business profile to ensure consistent tone."
+    // WARNING: Target audience not set - recommendations will be generic
+    "Target audience not set - recommendations will be generic. Add this in your business profile for better results.",
+
+    // WARNING: No target keywords set - can't optimize for ranking goals
+    "No target keywords set - can't optimize for ranking goals. Add keywords in your business profile.",
+
+    // TIP: Add your differentiators to make meta descriptions more compelling
+    "Add your differentiators in the business profile to make meta descriptions more compelling.",
+
+    // TIP: Set your brand voice to ensure consistent tone
+    "Set your brand voice in the business profile to ensure consistent tone."
   ]
 }
 ```
 
 Or if no profile exists at all:
-```json
+```jsonc
 {
   "profile_warnings": [
-    "📝 No client profile found. Fill out your profile at /clients/{id}/profile for personalized recommendations."
+    // No client profile found - recommendations will be generic
+    "No client profile found. Fill out your profile at /clients/{id}/profile for personalized recommendations."
   ]
 }
 ```
@@ -933,11 +984,14 @@ Make sure your dev server is running (e.g., npm run dev).
 
 Every response includes explicit `source` and `fetched_from` fields:
 
-```json
+```jsonc
 {
-  "source": "local_dev_server",        // or "production_database"
+  // Source: local_dev_server, production_database, or direct_content
+  "source": "local_dev_server",
+
+  // Exact URL that was fetched and analyzed
   "fetched_from": "http://localhost:3000/page",
-  ...
+  // ... rest of response
 }
 ```
 
@@ -947,19 +1001,19 @@ Every response includes explicit `source` and `fetched_from` fields:
 
 ## Roadmap
 
-### Phase 1: Core Tools (Complete ✅)
-- ✅ `get_page_seo` - Get SEO data for a specific page
-- ✅ `get_issues` - Get all site issues with health score
-- ✅ `get_gsc_insights` - Get GSC performance data with content recommendations ⭐ NEW
-- ✅ `generate_meta` - AI-powered title and meta description generation
-- ✅ `generate_schema` - Auto-generate structured data (Article, Product, etc.)
-- ✅ `crawl_site` - Trigger fresh site crawl
+### Phase 1: Core Tools (Complete)
+- DONE: `get_page_seo` - Get SEO data for a specific page
+- DONE: `get_issues` - Get all site issues with health score
+- DONE: `get_gsc_insights` - Get GSC performance data with content recommendations (NEW)
+- DONE: `generate_meta` - AI-powered title and meta description generation
+- DONE: `generate_schema` - Auto-generate structured data (Article, Product, etc.)
+- DONE: `crawl_site` - Trigger fresh site crawl
 
-### Phase 2: Workflow & Optimization Tools (Planned 📋)
-- 📋 `suggest_internal_links` - Internal linking recommendations
-- 📋 `check_before_deploy` - Pre-deployment SEO validation
-- 📋 `optimize_blog_post` - Deep optimization for blog content
-- 📋 `optimize_landing_page` - Conversion-focused SEO
+### Phase 2: Workflow & Optimization Tools (Planned)
+- PLANNED: `suggest_internal_links` - Internal linking recommendations
+- PLANNED: `check_before_deploy` - Pre-deployment SEO validation
+- PLANNED: `optimize_blog_post` - Deep optimization for blog content
+- PLANNED: `optimize_landing_page` - Conversion-focused SEO
 
 ### Future (Phase 4+)
 - Bulk operations across multiple pages
