@@ -391,6 +391,21 @@ export class APIClient {
       throw error;
     }
   }
+
+  /**
+   * Generic GET request
+   */
+  async get<T>(path: string, options?: { params?: any }): Promise<T | null> {
+    try {
+      const response = await this.client.get<T>(path, options);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
 }
 
 export const apiClient = new APIClient();

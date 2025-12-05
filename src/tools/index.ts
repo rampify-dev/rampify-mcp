@@ -8,6 +8,7 @@ import { crawlSite, CrawlSiteInput } from './crawl-site.js';
 import { generateSchema, GenerateSchemaInput } from './generate-schema.js';
 import { generateMeta, GenerateMetaInput } from './generate-meta.js';
 import { getSecurityContext, GetSecurityContextInput } from './get-security-context.js';
+import { getGSCInsights, GetGSCInsightsInput } from './get-gsc-insights.js';
 
 export const tools = {
   get_page_seo: {
@@ -161,6 +162,34 @@ export const tools = {
           },
         },
         required: ['url_path'],
+      },
+    },
+  },
+
+  get_gsc_insights: {
+    handler: getGSCInsights,
+    schema: GetGSCInsightsInput,
+    metadata: {
+      name: 'get_gsc_insights',
+      description: 'Get Google Search Console performance insights with AI-powered content recommendations. Returns top performing pages, query opportunities (improve CTR, rankings, keyword gaps), and actionable recommendations for what content to write next.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          period: {
+            type: 'string',
+            enum: ['7d', '28d', '90d'],
+            description: 'Time period for analysis (default: 28d)',
+          },
+          include_recommendations: {
+            type: 'boolean',
+            description: 'Include AI-powered content recommendations (default: true)',
+          },
+        },
+        required: [],
       },
     },
   },
