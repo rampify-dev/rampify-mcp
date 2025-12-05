@@ -1,12 +1,30 @@
-# Rampify MCP Server
+# Rampify MCP Server - Claude SEO Checker
 
 [![Website](https://img.shields.io/badge/Website-rampify.dev-blue)](https://www.rampify.dev)
 [![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.rampify.dev/docs/mcp-server)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Real-time SEO intelligence for AI coding tools (Cursor, Claude Code).
+**Turn Claude Code into a powerful SEO checker.** Real-time site audits, Google Search Console integration, and AI-powered recommendations directly in your editor (Cursor, Claude Code).
 
 **[Get Started with Rampify →](https://www.rampify.dev)**
+
+## What is a Claude SEO Checker?
+
+A **Claude SEO checker** is an MCP (Model Context Protocol) server that adds SEO validation capabilities to Claude Code and Cursor. Unlike **AI rank trackers** that check if your site appears in Claude's AI responses, Rampify analyzes your **website's technical SEO**, validates meta tags, detects issues, and provides actionable fix recommendations—all from your terminal or IDE.
+
+**Not an AI rank tracker.** This is a developer tool that brings SEO intelligence into your coding workflow.
+
+### Claude SEO Checker vs AI Rank Trackers
+
+| Feature | Claude SEO Checker (Rampify) | AI Rank Trackers |
+|---------|------------------------------|------------------|
+| **What it checks** | YOUR website's SEO (meta tags, schema, performance) | If your site appears in Claude AI responses |
+| **Use case** | Fix SEO issues before deployment | Track AI visibility |
+| **Where it works** | Your IDE (Claude Code, Cursor) | Separate dashboard |
+| **Target audience** | Developers building sites | Marketers tracking AI rank |
+| **Data source** | Your site + Google Search Console | Claude AI responses |
+
+**Keywords:** claude seo checker, mcp seo server, seo tools for claude code, cursor seo tools, ai seo checker, claude code seo
 
 Bring Google Search Console data, SEO insights, and AI-powered recommendations directly into your editor. No context switching, no delays.
 

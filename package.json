@@ -2,7 +2,7 @@
   "name": "@rampify/mcp-server",
   "version": "0.1.2",
   "private": false,
-  "description": "MCP server providing real-time SEO intelligence for AI coding tools",
+  "description": "Claude SEO Checker - MCP server for real-time SEO audits in Claude Code and Cursor. Check site health, validate meta tags, integrate Google Search Console, and get AI-powered recommendations.",
   "main": "build/index.js",
   "type": "module",
   "bin": {
@@ -27,12 +27,18 @@
     "LICENSE"
   ],
   "keywords": [
+    "claude-seo-checker",
+    "mcp-seo",
+    "seo-checker",
+    "claude-code",
+    "cursor",
     "mcp",
     "seo",
-    "ai",
-    "cursor",
-    "claude",
-    "developer-tools"
+    "ai-seo",
+    "developer-tools",
+    "google-search-console",
+    "seo-audit",
+    "meta-tags"
   ],
   "author": "Rampify",
   "license": "MIT",
