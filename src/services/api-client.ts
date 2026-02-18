@@ -406,6 +406,14 @@ export class APIClient {
       throw error;
     }
   }
+
+  /**
+   * Generic POST request
+   */
+  async post<T>(path: string, body?: any): Promise<T> {
+    const response = await this.client.post<T>(path, body);
+    return response.data;
+  }
 }
 
 export const apiClient = new APIClient();

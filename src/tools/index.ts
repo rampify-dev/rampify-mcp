@@ -9,6 +9,7 @@ import { generateSchema, GenerateSchemaInput } from './generate-schema.js';
 import { generateMeta, GenerateMetaInput } from './generate-meta.js';
 import { getSecurityContext, GetSecurityContextInput } from './get-security-context.js';
 import { getGSCInsights, GetGSCInsightsInput } from './get-gsc-insights.js';
+import { createFeatureSpec, CreateFeatureSpecInput } from './create-feature-spec.js';
 
 export const tools = {
   get_page_seo: {
@@ -190,6 +191,116 @@ export const tools = {
           },
         },
         required: [],
+      },
+    },
+  },
+
+  create_feature_spec: {
+    handler: createFeatureSpec,
+    schema: CreateFeatureSpecInput,
+    metadata: {
+      name: 'create_feature_spec',
+      description: `Create and save a feature specification to Rampify.
+
+IMPORTANT: Before calling this tool, YOU (Claude) must generate the complete structured spec from the user's description and your codebase context. Do not pass raw natural language — populate all fields:
+- Infer affected_files from open files and the codebase structure
+- Infer tech_stack from package.json and imports
+- Generate 3-5 acceptance criteria covering happy path, edge cases, and error handling
+- Break implementation into 3-8 concrete tasks with file references
+- Write ai_context_summary to help future AI agents understand the approach
+- Set next_action to the single most important first step`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          title: {
+            type: 'string',
+            description: 'Short, imperative title (e.g., "Add dark mode toggle")',
+          },
+          description: {
+            type: 'string',
+            description: 'Full description of the feature, its purpose and user value',
+          },
+          feature_type: {
+            type: 'string',
+            enum: ['new_feature', 'enhancement', 'refactor', 'bug_fix'],
+            description: 'Type of feature (default: new_feature)',
+          },
+          priority: {
+            type: 'string',
+            enum: ['critical', 'high', 'normal', 'low'],
+            description: 'Priority level (default: normal)',
+          },
+          ai_context_summary: {
+            type: 'string',
+            description: '2-3 sentence summary of architecture decisions for future AI agents',
+          },
+          next_action: {
+            type: 'string',
+            description: 'The single next concrete step to start implementation',
+          },
+          tech_stack: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Technologies involved (e.g., ["Next.js", "Tailwind CSS"])',
+          },
+          affected_files: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Files to create or modify (relative paths)',
+          },
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Categorization tags',
+          },
+          criteria: {
+            type: 'array',
+            description: 'Acceptance criteria',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+                criterion_type: {
+                  type: 'string',
+                  enum: ['functional', 'technical', 'performance', 'security', 'accessibility'],
+                },
+                verification_method: {
+                  type: 'string',
+                  enum: ['automated_test', 'manual_qa', 'code_review'],
+                },
+                is_required: { type: 'boolean' },
+              },
+              required: ['title'],
+            },
+          },
+          tasks: {
+            type: 'array',
+            description: 'Ordered implementation tasks',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+                task_type: {
+                  type: 'string',
+                  enum: ['backend', 'frontend', 'database', 'testing', 'docs'],
+                },
+                files_to_modify: {
+                  type: 'array',
+                  items: { type: 'string' },
+                },
+                code_snippet: { type: 'string' },
+              },
+              required: ['title'],
+            },
+          },
+        },
+        required: ['title'],
       },
     },
   },
