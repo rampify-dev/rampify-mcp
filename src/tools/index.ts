@@ -10,6 +10,7 @@ import { generateMeta, GenerateMetaInput } from './generate-meta.js';
 import { getSecurityContext, GetSecurityContextInput } from './get-security-context.js';
 import { getGSCInsights, GetGSCInsightsInput } from './get-gsc-insights.js';
 import { createFeatureSpec, CreateFeatureSpecInput } from './create-feature-spec.js';
+import { getFeatureSpec, GetFeatureSpecInput } from './get-feature-spec.js';
 
 export const tools = {
   get_page_seo: {
@@ -305,6 +306,48 @@ IMPORTANT: Before calling this tool, YOU (Claude) must generate the complete str
           },
         },
         required: ['title'],
+      },
+    },
+  },
+
+  get_feature_spec: {
+    handler: getFeatureSpec,
+    schema: GetFeatureSpecInput,
+    metadata: {
+      name: 'get_feature_spec',
+      description: `Retrieve a feature specification from Rampify. Use this when starting work on a feature to understand what to build, which files to touch, and what the acceptance criteria are.
+
+Two lookup modes:
+- spec_id: fetch a specific spec with full criteria and tasks (use this when you know the ID)
+- search: keyword search across titles and descriptions (returns a list; follow up with spec_id for full details)`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when the domain is not registered as a client.',
+          },
+          spec_id: {
+            type: 'string',
+            description: 'UUID of the specific feature spec to retrieve. Returns full spec with criteria and tasks.',
+          },
+          search: {
+            type: 'string',
+            description: 'Keyword to search across spec titles and descriptions. Returns a list of matching specs.',
+          },
+          include_criteria: {
+            type: 'boolean',
+            description: 'Include acceptance criteria in the response (default: true). Only applies when using spec_id.',
+          },
+          include_tasks: {
+            type: 'boolean',
+            description: 'Include implementation tasks in the response (default: true). Only applies when using spec_id.',
+          },
+        },
       },
     },
   },
