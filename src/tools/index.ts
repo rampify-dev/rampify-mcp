@@ -216,6 +216,10 @@ IMPORTANT: Before calling this tool, YOU (Claude) must generate the complete str
             type: 'string',
             description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
           },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when the domain is not registered as a client.',
+          },
           title: {
             type: 'string',
             description: 'Short, imperative title (e.g., "Add dark mode toggle")',

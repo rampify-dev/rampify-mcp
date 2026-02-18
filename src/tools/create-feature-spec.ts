@@ -43,6 +43,10 @@ export const CreateFeatureSpecInput = z.object({
     .string()
     .optional()
     .describe('Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.'),
+  project_id: z
+    .string()
+    .optional()
+    .describe('Site UUID — use this instead of domain when the domain is not registered as a client (e.g., for the Rampify project itself). Find it in the dashboard URL: /clients/[clientId]/...'),
 
   // Core spec fields
   title: z.string().describe('Short, imperative title (e.g., "Add dark mode toggle")'),
@@ -113,22 +117,38 @@ export async function createFeatureSpec(
     };
   }
 
-  logger.info('Creating feature spec', { domain, title: params.title });
+  logger.info('Creating feature spec', { domain, project_id: params.project_id, title: params.title });
 
   try {
-    // Resolve domain → client → site
-    const client = await apiClient.getClientByDomain(domain);
-    if (!client) {
-      return {
-        error: `No project found for domain "${domain}". Add this site in the Rampify dashboard first.`,
-      };
-    }
+    // Resolve site ID — either directly provided or via domain lookup
+    let siteId: string;
+    let clientId: string;
 
-    const site = Array.isArray(client.sites) ? client.sites[0] : (client as any).sites;
-    if (!site) {
-      return {
-        error: `No site configured for "${domain}". Run a site analysis in the dashboard first.`,
-      };
+    if (params.project_id) {
+      siteId = params.project_id;
+      // Fetch client via site to build dashboard URL
+      const siteData = await apiClient.get<any>(`/api/sites/${params.project_id}`);
+      clientId = siteData?.client_id || '';
+    } else {
+      if (!domain) {
+        return {
+          error: 'No domain or project_id specified. Provide domain, project_id, or set SEO_CLIENT_DOMAIN.',
+        };
+      }
+      const client = await apiClient.getClientByDomain(domain);
+      if (!client) {
+        return {
+          error: `No project found for domain "${domain}". Add this site in the Rampify dashboard first.`,
+        };
+      }
+      const site = Array.isArray(client.sites) ? client.sites[0] : (client as any).sites;
+      if (!site) {
+        return {
+          error: `No site configured for "${domain}". Run a site analysis in the dashboard first.`,
+        };
+      }
+      siteId = site.id;
+      clientId = client.id;
     }
 
     // Build request body matching the POST /api/sites/[id]/feature-specs schema
@@ -155,7 +175,7 @@ export async function createFeatureSpec(
 
     // POST to backend
     const response = await apiClient.post<{ spec: any }>(
-      `/api/sites/${site.id}/feature-specs`,
+      `/api/sites/${siteId}/feature-specs`,
       body
     );
 
@@ -166,7 +186,9 @@ export async function createFeatureSpec(
 
     // Build dashboard URL
     const baseUrl = config.backendApiUrl.replace('/api', '');
-    const dashboardUrl = `${baseUrl}/clients/${client.id}/features/${created.id}`;
+    const dashboardUrl = clientId
+      ? `${baseUrl}/clients/${clientId}/features/${created.id}`
+      : `${baseUrl}/features/${created.id}`;
 
     logger.info('Feature spec created', { specId: created.id, title: params.title });
 
