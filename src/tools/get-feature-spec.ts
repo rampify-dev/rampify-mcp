@@ -55,28 +55,66 @@ export type GetFeatureSpecParams = z.infer<typeof GetFeatureSpecInput>;
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function getFeatureSpec(params: GetFeatureSpecParams): Promise<any> {
-  const domain = params.domain || config.defaultDomain;
-
   if (!params.spec_id && !params.search) {
     return { error: 'Provide either spec_id (for a specific spec) or search (keyword lookup).' };
   }
 
   logger.info('Getting feature spec', {
-    domain,
+    domain: params.domain,
     project_id: params.project_id,
     spec_id: params.spec_id,
     search: params.search,
   });
 
+  const baseUrl = config.backendApiUrl.replace('/api', '');
+
   try {
-    // ── Resolve site ID ───────────────────────────────────────────────────────
+    // ── spec_id: global lookup — no site ID needed ─────────────────────────────
+    if (params.spec_id) {
+      const qs = new URLSearchParams({
+        include_criteria: String(params.include_criteria ?? true),
+        include_tasks: String(params.include_tasks ?? true),
+      });
+
+      const data = await apiClient.get<any>(
+        `/api/feature-specs/${params.spec_id}?${qs}`
+      );
+
+      if (!data?.spec) {
+        return { error: `Feature spec "${params.spec_id}" not found.` };
+      }
+
+      const clientId = data.client_id ?? '';
+      const dashboardUrl = clientId
+        ? `${baseUrl}/clients/${clientId}/features/${data.spec.id}`
+        : null;
+
+      logger.info('Feature spec retrieved', { specId: data.spec.id });
+
+      return {
+        spec: data.spec,
+        criteria: data.criteria ?? [],
+        tasks: data.tasks ?? [],
+        ...(dashboardUrl ? { dashboard_url: dashboardUrl } : {}),
+        summary: {
+          title: data.spec.title,
+          status: data.spec.status,
+          priority: data.spec.priority,
+          next_action: data.spec.next_action,
+          tasks_total: (data.tasks ?? []).length,
+          tasks_completed: (data.tasks ?? []).filter((t: any) => t.status === 'completed').length,
+          criteria_total: (data.criteria ?? []).length,
+        },
+      };
+    }
+
+    // ── search: requires site context ─────────────────────────────────────────
+    const domain = params.domain || config.defaultDomain;
+
     let siteId: string;
-    let clientId: string;
 
     if (params.project_id) {
       siteId = params.project_id;
-      const siteData = await apiClient.get<any>(`/api/sites/${params.project_id}`);
-      clientId = siteData?.client_id || '';
     } else {
       if (!domain) {
         return {
@@ -92,48 +130,6 @@ export async function getFeatureSpec(params: GetFeatureSpecParams): Promise<any>
         return { error: `No site configured for "${domain}". Run a site analysis in the dashboard first.` };
       }
       siteId = site.id;
-      clientId = client.id;
-    }
-
-    const baseUrl = config.backendApiUrl.replace('/api', '');
-
-    // ── spec_id: fetch single spec with full details ───────────────────────────
-    if (params.spec_id) {
-      const qs = new URLSearchParams({
-        include_criteria: String(params.include_criteria ?? true),
-        include_tasks: String(params.include_tasks ?? true),
-      });
-
-      const data = await apiClient.get<any>(
-        `/api/sites/${siteId}/feature-specs/${params.spec_id}?${qs}`
-      );
-
-      if (!data?.spec) {
-        return { error: `Feature spec "${params.spec_id}" not found.` };
-      }
-
-      const dashboardUrl = clientId
-        ? `${baseUrl}/clients/${clientId}/features/${data.spec.id}`
-        : `${baseUrl}/features/${data.spec.id}`;
-
-      logger.info('Feature spec retrieved', { specId: data.spec.id });
-
-      return {
-        spec: data.spec,
-        criteria: data.criteria ?? [],
-        tasks: data.tasks ?? [],
-        dashboard_url: dashboardUrl,
-        // Surface the most actionable fields at the top level for quick AI consumption
-        summary: {
-          title: data.spec.title,
-          status: data.spec.status,
-          priority: data.spec.priority,
-          next_action: data.spec.next_action,
-          tasks_total: (data.tasks ?? []).length,
-          tasks_completed: (data.tasks ?? []).filter((t: any) => t.status === 'completed').length,
-          criteria_total: (data.criteria ?? []).length,
-        },
-      };
     }
 
     // ── search: return list of matching specs ─────────────────────────────────
