@@ -414,6 +414,14 @@ export class APIClient {
     const response = await this.client.post<T>(path, body);
     return response.data;
   }
+
+  /**
+   * Generic PATCH request
+   */
+  async patch<T>(path: string, body?: any): Promise<T> {
+    const response = await this.client.patch<T>(path, body);
+    return response.data;
+  }
 }
 
 export const apiClient = new APIClient();

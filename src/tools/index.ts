@@ -11,6 +11,7 @@ import { getSecurityContext, GetSecurityContextInput } from './get-security-cont
 import { getGSCInsights, GetGSCInsightsInput } from './get-gsc-insights.js';
 import { createFeatureSpec, CreateFeatureSpecInput } from './create-feature-spec.js';
 import { getFeatureSpec, GetFeatureSpecInput } from './get-feature-spec.js';
+import { updateFeatureSpec, UpdateFeatureSpecInput } from './update-feature-spec.js';
 
 export const tools = {
   get_page_seo: {
@@ -348,6 +349,59 @@ Two lookup modes:
             description: 'Include implementation tasks in the response (default: true). Only applies when using spec_id.',
           },
         },
+      },
+    },
+  },
+
+  update_feature_spec: {
+    handler: updateFeatureSpec,
+    schema: UpdateFeatureSpecInput,
+    metadata: {
+      name: 'update_feature_spec',
+      description: `Update a feature spec to reflect actual progress. Mark tasks and criteria as complete, update spec status, and advance next_action.
+
+Use this after completing work described in a spec task. Returns a suggested_commit message string.
+
+Examples:
+- Mark a task complete: { spec_id, task_id, task_status: "completed" }
+- Update overall status: { spec_id, status: "in_progress" }
+- Mark a criterion verified: { spec_id, criterion_id, criterion_status: "verified" }`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          spec_id: {
+            type: 'string',
+            description: 'UUID of the feature spec to update (required)',
+          },
+          status: {
+            type: 'string',
+            enum: ['planned', 'in_progress', 'completed', 'verified', 'deprecated'],
+            description: 'New status for the overall spec',
+          },
+          next_action: {
+            type: 'string',
+            description: 'Manually override next_action. Auto-advanced after task completion if omitted.',
+          },
+          task_id: {
+            type: 'string',
+            description: 'UUID of the task to update (from get_feature_spec tasks array)',
+          },
+          task_status: {
+            type: 'string',
+            enum: ['todo', 'in_progress', 'completed', 'blocked'],
+            description: 'New status for the task',
+          },
+          criterion_id: {
+            type: 'string',
+            description: 'UUID of the criterion to update (from get_feature_spec criteria array)',
+          },
+          criterion_status: {
+            type: 'string',
+            enum: ['pending', 'implemented', 'tested', 'verified'],
+            description: 'New status for the criterion',
+          },
+        },
+        required: ['spec_id'],
       },
     },
   },
