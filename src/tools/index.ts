@@ -400,6 +400,18 @@ Examples:
             enum: ['pending', 'implemented', 'tested', 'verified'],
             description: 'New status for the criterion',
           },
+          add_task: {
+            type: 'object',
+            description: 'Add a new task to the spec',
+            properties: {
+              title: { type: 'string' },
+              description: { type: 'string' },
+              task_type: { type: 'string', enum: ['backend', 'frontend', 'database', 'testing', 'docs'] },
+              files_to_modify: { type: 'array', items: { type: 'string' } },
+              code_snippet: { type: 'string' },
+            },
+            required: ['title'],
+          },
         },
         required: ['spec_id'],
       },

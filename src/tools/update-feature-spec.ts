@@ -37,6 +37,18 @@ export const UpdateFeatureSpecInput = z.object({
     .optional()
     .describe('New status for the task'),
 
+  // Add a new task
+  add_task: z
+    .object({
+      title: z.string().describe('Concrete implementation step'),
+      description: z.string().optional(),
+      task_type: z.enum(['backend', 'frontend', 'database', 'testing', 'docs']).optional(),
+      files_to_modify: z.array(z.string()).optional(),
+      code_snippet: z.string().optional(),
+    })
+    .optional()
+    .describe('Add a new task to the spec'),
+
   // Criterion update
   criterion_id: z
     .string()
@@ -57,8 +69,8 @@ export async function updateFeatureSpec(params: UpdateFeatureSpecParams): Promis
     return { error: 'spec_id is required.' };
   }
 
-  if (!params.status && !params.task_id && !params.criterion_id && params.next_action === undefined) {
-    return { error: 'Provide at least one of: status, task_id + task_status, criterion_id + criterion_status, or next_action.' };
+  if (!params.status && !params.task_id && !params.criterion_id && params.next_action === undefined && !params.add_task) {
+    return { error: 'Provide at least one of: status, task_id + task_status, criterion_id + criterion_status, next_action, or add_task.' };
   }
 
   if (params.task_id && !params.task_status) {
@@ -84,6 +96,7 @@ export async function updateFeatureSpec(params: UpdateFeatureSpecParams): Promis
     if (params.next_action !== undefined) body.next_action = params.next_action;
     if (params.task_id) { body.task_id = params.task_id; body.task_status = params.task_status; }
     if (params.criterion_id) { body.criterion_id = params.criterion_id; body.criterion_status = params.criterion_status; }
+    if (params.add_task) { body.add_task = params.add_task; }
 
     const data = await apiClient.patch<any>(
       `/api/feature-specs/${params.spec_id}`,
