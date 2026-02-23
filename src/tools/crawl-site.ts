@@ -46,29 +46,22 @@ export async function crawlSite(params: CrawlSiteParams): Promise<CrawlSiteResul
   logger.info('Triggering site crawl', { domain });
 
   try {
-    // Get client by domain
-    const client = await apiClient.getClientByDomain(domain);
-    if (!client) {
-      return {
-        error: `No client found for domain "${domain}". Please add this site to the dashboard first.`,
-      };
+    // Resolve site and client
+    const resolved = await apiClient.resolveSiteAndClient({ domain });
+
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
 
-    // Handle both array and single object responses from Supabase
-    const site = Array.isArray(client.sites) ? client.sites[0] : client.sites;
-    if (!site) {
-      return {
-        error: `No site configuration found for "${domain}". Please configure the site in the dashboard.`,
-      };
-    }
+    const { siteId, clientId } = resolved;
 
-    logger.info('Triggering crawl for site', { site_id: site.id, domain });
+    logger.info('Triggering crawl for site', { site_id: siteId, domain });
 
     // Trigger analysis via backend API
-    const result = await apiClient.triggerSiteAnalysis(client.id);
+    const result = await apiClient.triggerSiteAnalysis(clientId);
 
     logger.info('Crawl completed', {
-      site_id: site.id,
+      site_id: siteId,
       total_urls: result.summary.total_urls,
       issues_found: result.summary.issues_found,
     });

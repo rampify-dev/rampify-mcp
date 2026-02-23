@@ -111,26 +111,16 @@ export async function getFeatureSpec(params: GetFeatureSpecParams): Promise<any>
     // ── search: requires site context ─────────────────────────────────────────
     const domain = params.domain || config.defaultDomain;
 
-    let siteId: string;
+    const resolved = await apiClient.resolveSiteAndClient({
+      projectId: params.project_id,
+      domain,
+    });
 
-    if (params.project_id) {
-      siteId = params.project_id;
-    } else {
-      if (!domain) {
-        return {
-          error: 'No domain or project_id specified. Provide domain, project_id, or set SEO_CLIENT_DOMAIN.',
-        };
-      }
-      const client = await apiClient.getClientByDomain(domain);
-      if (!client) {
-        return { error: `No project found for domain "${domain}". Add this site in the Rampify dashboard first.` };
-      }
-      const site = Array.isArray(client.sites) ? client.sites[0] : (client as any).sites;
-      if (!site) {
-        return { error: `No site configured for "${domain}". Run a site analysis in the dashboard first.` };
-      }
-      siteId = site.id;
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
+
+    const { siteId } = resolved;
 
     // ── search: return list of matching specs ─────────────────────────────────
     const qs = new URLSearchParams({ search: params.search! });

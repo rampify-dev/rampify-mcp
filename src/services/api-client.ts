@@ -393,6 +393,48 @@ export class APIClient {
   }
 
   /**
+   * Resolve a siteId and clientId from either a project_id or domain.
+   * All tools should use this instead of implementing their own resolution logic.
+   */
+  async resolveSiteAndClient(opts: {
+    projectId?: string;
+    domain?: string;
+  }): Promise<{ siteId: string; clientId: string } | { error: string }> {
+    const { projectId, domain } = opts;
+
+    // Step 1: Resolve client ID
+    let clientId: string;
+
+    if (projectId) {
+      clientId = projectId;
+    } else if (domain) {
+      const client = await this.getClientByDomain(domain);
+      if (!client) {
+        return { error: `No project found for domain "${domain}". Add this domain in the Rampify dashboard first.` };
+      }
+      clientId = client.id;
+    } else {
+      return { error: 'No domain or project_id specified. Provide domain, project_id, or set SEO_CLIENT_DOMAIN / RAMPIFY_PROJECT_ID env var.' };
+    }
+
+    // Step 2: Get site via client → site endpoint
+    const site = await this.get<any>(`/api/clients/${clientId}/site`);
+    if (site?.id) {
+      return { siteId: site.id, clientId: site.client_id || clientId };
+    }
+
+    // Step 3: If projectId was provided, it might be a direct site UUID (not a client ID)
+    if (projectId) {
+      const siteData = await this.get<any>(`/api/sites/${projectId}`);
+      if (siteData?.client_id) {
+        return { siteId: projectId, clientId: siteData.client_id };
+      }
+    }
+
+    return { error: `Could not resolve a project for ${projectId ? `ID "${projectId}"` : `domain "${domain}"`}. Check your Rampify dashboard.` };
+  }
+
+  /**
    * Generic GET request
    */
   async get<T>(path: string, options?: { params?: any }): Promise<T | null> {

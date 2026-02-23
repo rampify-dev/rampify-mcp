@@ -46,7 +46,7 @@ export const CreateFeatureSpecInput = z.object({
   project_id: z
     .string()
     .optional()
-    .describe('Site UUID — use this instead of domain when the domain is not registered as a client (e.g., for the Rampify project itself). Find it in the dashboard URL: /clients/[clientId]/...'),
+    .describe('Project UUID — use instead of domain when no domain is configured. Accepts either the client ID (from /clients/[id]/ in the dashboard URL) or a site UUID. Uses RAMPIFY_PROJECT_ID env var if not provided.'),
 
   // Core spec fields
   title: z.string().describe('Short, imperative title (e.g., "Add dark mode toggle")'),
@@ -110,46 +110,20 @@ export async function createFeatureSpec(
 ): Promise<{ success: true; spec: any; url: string } | { error: string }> {
   const domain = params.domain || config.defaultDomain;
 
-  if (!domain) {
-    return {
-      error:
-        'No domain specified. Either provide the domain parameter or set SEO_CLIENT_DOMAIN in the MCP config.',
-    };
-  }
-
   logger.info('Creating feature spec', { domain, project_id: params.project_id, title: params.title });
 
   try {
-    // Resolve site ID — either directly provided or via domain lookup
-    let siteId: string;
-    let clientId: string;
+    // Resolve site ID — unified path for both domain and project_id
+    const resolved = await apiClient.resolveSiteAndClient({
+      projectId: params.project_id || config.defaultProjectId,
+      domain,
+    });
 
-    if (params.project_id) {
-      siteId = params.project_id;
-      // Fetch client via site to build dashboard URL
-      const siteData = await apiClient.get<any>(`/api/sites/${params.project_id}`);
-      clientId = siteData?.client_id || '';
-    } else {
-      if (!domain) {
-        return {
-          error: 'No domain or project_id specified. Provide domain, project_id, or set SEO_CLIENT_DOMAIN.',
-        };
-      }
-      const client = await apiClient.getClientByDomain(domain);
-      if (!client) {
-        return {
-          error: `No project found for domain "${domain}". Add this site in the Rampify dashboard first.`,
-        };
-      }
-      const site = Array.isArray(client.sites) ? client.sites[0] : (client as any).sites;
-      if (!site) {
-        return {
-          error: `No site configured for "${domain}". Run a site analysis in the dashboard first.`,
-        };
-      }
-      siteId = site.id;
-      clientId = client.id;
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
+
+    const { siteId, clientId } = resolved;
 
     // Build request body matching the POST /api/sites/[id]/feature-specs schema
     const body: Record<string, any> = {

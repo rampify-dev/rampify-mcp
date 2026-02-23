@@ -49,30 +49,23 @@ export async function getIssues(params: GetIssuesParams): Promise<SiteScanResult
       return cached;
     }
 
-    // Get client by domain
-    const client = await apiClient.getClientByDomain(domain);
-    if (!client) {
-      return {
-        error: `No client found for domain "${domain}". Please add this site to the dashboard first.`,
-      };
+    // Resolve site and client
+    const resolved = await apiClient.resolveSiteAndClient({ domain });
+
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
 
-    // Handle both array and single object responses from Supabase
-    const site = Array.isArray(client.sites) ? client.sites[0] : client.sites;
-    if (!site) {
-      return {
-        error: `No site configuration found for "${domain}". Please configure the site in the dashboard.`,
-      };
-    }
+    const { siteId } = resolved;
 
     // Get comprehensive site stats (includes health score, issue counts, etc.)
-    const siteStats = await apiClient.getSiteStats(site.id);
+    const siteStats = await apiClient.getSiteStats(siteId);
 
     // Get all URLs with their checks (for pages_with_issues calculation)
-    const urlsResponse = await apiClient.getSiteUrls(site.id, { limit: 1000 });
+    const urlsResponse = await apiClient.getSiteUrls(siteId, { limit: 1000 });
 
     // Get issues from real-time detection API (includes both URL-level and site-level issues)
-    const issuesResponse = await apiClient.getSiteIssues(site.id);
+    const issuesResponse = await apiClient.getSiteIssues(siteId);
 
     // Map issues to MCP format (keep severity as-is from API: critical/warning/info)
     const allIssues: any[] = issuesResponse.issues.map(issue => ({

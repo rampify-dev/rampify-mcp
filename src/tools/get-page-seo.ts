@@ -70,21 +70,14 @@ export async function getPageSEO(params: GetPageSEOParams): Promise<SEOContext |
       return cached;
     }
 
-    // Get client by domain
-    const client = await apiClient.getClientByDomain(domain);
-    if (!client) {
-      return {
-        error: `No client found for domain "${domain}". Please add this site to the dashboard first.`,
-      };
+    // Resolve site and client
+    const resolved = await apiClient.resolveSiteAndClient({ domain });
+
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
 
-    // Handle both array and single object responses from Supabase
-    const site = Array.isArray(client.sites) ? client.sites[0] : client.sites;
-    if (!site) {
-      return {
-        error: `No site configuration found for "${domain}". Please configure the site in the dashboard.`,
-      };
-    }
+    const { siteId } = resolved;
 
     // Resolve URL path from file path if needed
     let resolvedUrlPath = url_path;
@@ -97,7 +90,7 @@ export async function getPageSEO(params: GetPageSEOParams): Promise<SEOContext |
     }
 
     // Get site URLs to find matching URL
-    const urlsResponse = await apiClient.getSiteUrls(site.id, { limit: 1000 });
+    const urlsResponse = await apiClient.getSiteUrls(siteId, { limit: 1000 });
 
     let targetUrl = null;
     if (resolvedUrlPath) {
@@ -114,13 +107,13 @@ export async function getPageSEO(params: GetPageSEOParams): Promise<SEOContext |
 
     // If no specific URL, provide site-level context
     if (!targetUrl) {
-      const siteContext = await getSiteLevelContext(site.id, domain);
+      const siteContext = await getSiteLevelContext(siteId, domain);
       cache.set(cacheKey, siteContext);
       return siteContext;
     }
 
     // Get URL-specific context
-    const urlContext = await getURLLevelContext(targetUrl, site.id, domain);
+    const urlContext = await getURLLevelContext(targetUrl, siteId, domain);
     cache.set(cacheKey, urlContext);
     return urlContext;
 

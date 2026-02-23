@@ -28,21 +28,26 @@ class Logger {
     return `[${timestamp}] [${level.toUpperCase()}] ${message}${formattedArgs}`;
   }
 
+  // All output goes to stderr — stdout is reserved for MCP JSON-RPC communication.
+  private log(message: string): void {
+    process.stderr.write(message + '\n');
+  }
+
   debug(message: string, ...args: any[]): void {
     if (this.shouldLog('debug')) {
-      console.debug(this.formatMessage('debug', message, ...args));
+      this.log(this.formatMessage('debug', message, ...args));
     }
   }
 
   info(message: string, ...args: any[]): void {
     if (this.shouldLog('info')) {
-      console.info(this.formatMessage('info', message, ...args));
+      this.log(this.formatMessage('info', message, ...args));
     }
   }
 
   warn(message: string, ...args: any[]): void {
     if (this.shouldLog('warn')) {
-      console.warn(this.formatMessage('warn', message, ...args));
+      this.log(this.formatMessage('warn', message, ...args));
     }
   }
 
@@ -51,7 +56,7 @@ class Logger {
       const errorDetails = error instanceof Error
         ? { message: error.message, stack: error.stack }
         : error;
-      console.error(this.formatMessage('error', message, errorDetails, ...args));
+      this.log(this.formatMessage('error', message, errorDetails, ...args));
     }
   }
 }

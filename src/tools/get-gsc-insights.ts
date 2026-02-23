@@ -101,28 +101,21 @@ export async function getGSCInsights(
       return cached;
     }
 
-    // Get client by domain
-    const client = await apiClient.getClientByDomain(domain);
-    if (!client) {
-      return {
-        error: `No client found for domain "${domain}". Please add this site to the dashboard first.`,
-      };
+    // Resolve site and client
+    const resolved = await apiClient.resolveSiteAndClient({ domain });
+
+    if ('error' in resolved) {
+      return { error: resolved.error };
     }
 
-    // Handle both array and single object responses from Supabase
-    const site = Array.isArray(client.sites) ? client.sites[0] : client.sites;
-    if (!site) {
-      return {
-        error: `No site configuration found for "${domain}". Please configure the site in the dashboard.`,
-      };
-    }
+    const { siteId } = resolved;
 
     // Convert period to days
     const days = parseInt(period.replace('d', ''));
 
     // Fetch insights from API
     const response = await apiClient.get<GSCInsightsResponse>(
-      `/api/sites/${site.id}/gsc-insights`,
+      `/api/sites/${siteId}/gsc-insights`,
       {
         params: {
           days,

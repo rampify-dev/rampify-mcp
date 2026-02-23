@@ -14,6 +14,8 @@ interface Config {
   cacheTTL: number;
   logLevel: string;
   defaultDomain?: string;
+  /** Client or site UUID — set via RAMPIFY_PROJECT_ID env var. Used when no domain is configured. */
+  defaultProjectId?: string;
 }
 
 function getConfig(): Config {
@@ -23,6 +25,7 @@ function getConfig(): Config {
   // Support both RAMPIFY_API_KEY (new) and API_KEY (legacy) for backwards compatibility
   const apiKey = process.env.RAMPIFY_API_KEY || process.env.API_KEY;
   const defaultDomain = process.env.SEO_CLIENT_DOMAIN;
+  const defaultProjectId = process.env.RAMPIFY_PROJECT_ID;
 
   logger.debug('Configuration loaded', {
     backendApiUrl,
@@ -30,6 +33,7 @@ function getConfig(): Config {
     logLevel,
     hasApiKey: !!apiKey,
     defaultDomain: defaultDomain || 'not set',
+    defaultProjectId: defaultProjectId || 'not set',
   });
 
   return {
@@ -38,6 +42,7 @@ function getConfig(): Config {
     cacheTTL,
     logLevel,
     defaultDomain,
+    defaultProjectId,
   };
 }
 

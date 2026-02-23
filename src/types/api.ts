@@ -11,12 +11,6 @@ export interface ClientResponse {
   id: string;
   company_name: string;
   domain: string;
-  sites: Array<{
-    id: string;
-    domain: string;
-    sitemap_url: string | null;
-    gsc_property_url: string | null;
-  }>;
 }
 
 export interface URLsResponse {

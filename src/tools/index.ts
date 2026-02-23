@@ -220,7 +220,7 @@ IMPORTANT: Before calling this tool, YOU (Claude) must generate the complete str
           },
           project_id: {
             type: 'string',
-            description: 'Project UUID — use instead of domain when the domain is not registered as a client.',
+            description: 'Project UUID — use instead of domain when no domain is configured. Accepts client ID (from /clients/[id]/ in the dashboard URL) or site UUID. Uses RAMPIFY_PROJECT_ID env var if not provided.',
           },
           title: {
             type: 'string',
