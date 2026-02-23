@@ -174,7 +174,7 @@ async function getSiteLevelContext(siteId: string, domain: string): Promise<SEOC
 
   if (urlsWithoutTitle > 0) {
     issues.push({
-      type: 'missing_title',
+      type: 'title_issue',
       severity: 'high' as const,
       title: `${urlsWithoutTitle} pages missing title tags`,
       description: `Found ${urlsWithoutTitle} URLs without title tags`,

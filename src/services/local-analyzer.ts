@@ -165,14 +165,14 @@ export function generateLocalSEOContext(
   const fullUrl = `http://${domain}${urlPath}`;
   const issues: SEOContext['issues'] = [];
 
-  // Check for missing title
+  // Check for title issues (consolidated as title_issue)
   if (!analysis.title) {
     issues.push({
-      type: 'missing_title',
+      type: 'title_issue',
       severity: 'critical',
       title: 'Missing page title',
       description: 'Page does not have a <title> tag',
-      current_state: { has_title: false },
+      current_state: { has_title: false, sub_type: 'missing' },
       recommended: { has_title: true },
       impact: {
         estimated_change: 'Critical for SEO - title is the most important on-page factor',
@@ -188,11 +188,11 @@ export function generateLocalSEOContext(
     });
   } else if (analysis.title.length < 30) {
     issues.push({
-      type: 'short_title',
+      type: 'title_issue',
       severity: 'medium',
       title: 'Title is too short',
       description: `Title is only ${analysis.title.length} characters (recommended: 50-60)`,
-      current_state: { title: analysis.title, length: analysis.title.length },
+      current_state: { title: analysis.title, length: analysis.title.length, sub_type: 'too_short' },
       recommended: { min_length: 50, max_length: 60 },
       impact: {
         estimated_change: 'Longer titles provide more context to search engines',
@@ -208,11 +208,11 @@ export function generateLocalSEOContext(
     });
   } else if (analysis.title.length > 60) {
     issues.push({
-      type: 'long_title',
+      type: 'title_issue',
       severity: 'low',
       title: 'Title might be truncated in search results',
       description: `Title is ${analysis.title.length} characters (recommended: 50-60)`,
-      current_state: { title: analysis.title, length: analysis.title.length },
+      current_state: { title: analysis.title, length: analysis.title.length, sub_type: 'too_long' },
       recommended: { max_length: 60 },
       impact: {
         estimated_change: 'Shorter titles display fully in search results',
@@ -231,7 +231,7 @@ export function generateLocalSEOContext(
   // Check for missing meta description
   if (!analysis.metaDescription) {
     issues.push({
-      type: 'missing_meta_description',
+      type: 'meta_description_issue',
       severity: 'high',
       title: 'Missing meta description',
       description: 'Page does not have a meta description',
@@ -251,7 +251,7 @@ export function generateLocalSEOContext(
     });
   } else if (analysis.metaDescription.length < 120) {
     issues.push({
-      type: 'short_meta_description',
+      type: 'meta_description_issue',
       severity: 'low',
       title: 'Meta description is too short',
       description: `Description is only ${analysis.metaDescription.length} characters (recommended: 150-160)`,

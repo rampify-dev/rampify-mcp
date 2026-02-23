@@ -152,15 +152,15 @@ export async function getIssues(params: GetIssuesParams): Promise<SiteScanResult
  */
 function generateFix(type: string, _url: any): any {
   const fixes: Record<string, any> = {
-    missing_title: {
+    title_issue: {
       type: 'add',
       code_snippet: '<title>Your Page Title (50-60 chars)</title>',
-      instructions: 'Add a descriptive title tag in the <head> section',
+      instructions: 'Add or fix the title tag in the <head> section (aim for 50-60 characters)',
     },
-    missing_meta_description: {
+    meta_description_issue: {
       type: 'add',
       code_snippet: '<meta name="description" content="Your description (150-160 chars)" />',
-      instructions: 'Add a compelling meta description in the <head> section',
+      instructions: 'Add or fix the meta description in the <head> section (aim for 150-160 characters)',
     },
     missing_sitemap: {
       type: 'create',
@@ -252,8 +252,8 @@ function generateRecommendedActions(summary: any, categories: Record<string, num
   }
 
   // PRIORITY 4: Missing titles
-  if (categories.missing_title && categories.missing_title > 0) {
-    actions.push(`Add title tags to ${categories.missing_title} pages - critical for SEO`);
+  if (categories.title_issue && categories.title_issue > 0) {
+    actions.push(`Fix title tags on ${categories.title_issue} pages - critical for SEO`);
   }
 
   // PRIORITY 5: Missing robots.txt
@@ -262,8 +262,8 @@ function generateRecommendedActions(summary: any, categories: Record<string, num
   }
 
   // PRIORITY 6: Meta descriptions (if many)
-  if (categories.missing_meta_description && categories.missing_meta_description > 10) {
-    actions.push(`Consider adding meta descriptions to ${categories.missing_meta_description} pages - can improve CTR`);
+  if (categories.meta_description_issue && categories.meta_description_issue > 10) {
+    actions.push(`Fix meta descriptions on ${categories.meta_description_issue} pages - can improve CTR`);
   }
 
   // PRIORITY 7: General warnings
