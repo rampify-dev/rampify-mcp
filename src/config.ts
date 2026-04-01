@@ -19,7 +19,7 @@ interface Config {
 }
 
 function getConfig(): Config {
-  const backendApiUrl = process.env.BACKEND_API_URL || 'http://localhost:3000';
+  const backendApiUrl = process.env.BACKEND_API_URL || 'https://www.rampify.dev';
   const cacheTTL = parseInt(process.env.CACHE_TTL || '3600', 10);
   const logLevel = process.env.LOG_LEVEL || 'info';
   // Support both RAMPIFY_API_KEY (new) and API_KEY (legacy) for backwards compatibility
