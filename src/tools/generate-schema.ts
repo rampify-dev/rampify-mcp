@@ -18,6 +18,7 @@ export const GenerateSchemaInput = z.object({
     'BlogPosting',
     'Product',
     'Organization',
+    'LocalBusiness',
     'FAQPage',
     'BreadcrumbList',
   ]).optional().default('auto').describe('Schema type to generate. Use "auto" to detect automatically.'),
@@ -148,6 +149,11 @@ function detectPageType(urlPath: string, analysis: any): string {
     return 'FAQPage';
   }
 
+  // Local business patterns
+  if (urlPath.match(/\/(location|locations|store-locator|find-us|our-office|branches|service-area)\//)) {
+    return 'LocalBusiness';
+  }
+
   // About/Company patterns
   if (urlPath.match(/\/(about|company|contact)\//)) {
     return 'Organization';
@@ -192,6 +198,13 @@ function generateSchemasForPageType(pageType: string, analysis: any, url: string
       schemas.push({
         type: 'Organization',
         json_ld: generateOrganizationSchema(analysis, url, domain),
+      });
+      break;
+
+    case 'LocalBusiness':
+      schemas.push({
+        type: 'LocalBusiness',
+        json_ld: generateLocalBusinessSchema(analysis, url, domain),
       });
       break;
 
@@ -285,6 +298,42 @@ function generateOrganizationSchema(analysis: any, _url: string, domain: string)
 }
 
 /**
+ * Generate LocalBusiness schema
+ */
+function generateLocalBusinessSchema(analysis: any, _url: string, domain: string): any {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: analysis.title || 'Business Name',
+    url: `https://${domain}`,
+    description: analysis.description || 'Business description',
+    image: analysis.og_image || 'https://example.com/storefront.jpg',
+    telephone: '+1-000-000-0000',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '123 Main St',
+      addressLocality: 'City',
+      addressRegion: 'ST',
+      postalCode: '00000',
+      addressCountry: 'US',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 0,
+      longitude: 0,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '09:00',
+        closes: '17:00',
+      },
+    ],
+  };
+}
+
+/**
  * Generate FAQPage schema
  */
 function generateFAQSchema(_analysis: any, _url: string): any {
@@ -369,6 +418,18 @@ function validateSchema(schema: any): { valid: boolean; warnings?: string[] } {
     }
     if (!schema.datePublished) {
       warnings.push('Article schema missing datePublished');
+    }
+  }
+
+  if (schema['@type'] === 'LocalBusiness') {
+    if (!schema.name || schema.name === 'Business Name') {
+      warnings.push('LocalBusiness schema missing or has placeholder name');
+    }
+    if (!schema.telephone || schema.telephone === '+1-000-000-0000') {
+      warnings.push('LocalBusiness schema missing or has placeholder telephone');
+    }
+    if (schema.address?.streetAddress === '123 Main St') {
+      warnings.push('LocalBusiness schema has placeholder address - replace with actual NAP data');
     }
   }
 

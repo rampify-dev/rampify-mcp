@@ -57,6 +57,7 @@ interface GSCInsightsResponse {
     end: string;
     days: number;
   };
+  gsc_connected: boolean;
   summary: {
     total_clicks: number;
     total_impressions: number;
@@ -78,7 +79,7 @@ interface GSCInsightsResponse {
  */
 export async function getGSCInsights(
   params: GetGSCInsightsParams
-): Promise<GSCInsightsResponse | { error: string }> {
+): Promise<GSCInsightsResponse | { error: string; action?: string; help?: string }> {
   const { domain: providedDomain, period, include_recommendations } = params;
 
   // Use provided domain or fall back to default
@@ -108,7 +109,8 @@ export async function getGSCInsights(
       return { error: resolved.error };
     }
 
-    const { siteId } = resolved;
+    const { siteId, clientId, domain: resolvedDomain } = resolved;
+    const displayDomain = resolvedDomain || domain;
 
     // Convert period to days
     const days = parseInt(period.replace('d', ''));
@@ -132,8 +134,16 @@ export async function getGSCInsights(
 
     // Check if GSC data is available
     if (response.summary.total_impressions === 0) {
+      if (!response.gsc_connected) {
+        return {
+          error: `Google Search Console is not connected for ${displayDomain}.`,
+          action: `Connect GSC at https://www.rampify.dev/clients/${clientId}/google-search`,
+          help: 'After connecting, data will sync within 24 hours.',
+        };
+      }
       return {
-        error: `No Google Search Console data found for "${domain}". Either:\n1. GSC is not connected - connect at https://rampify.dev\n2. Site has no search traffic yet\n3. GSC sync hasn't run yet - data syncs weekly`,
+        error: `No search data available yet for ${displayDomain}.`,
+        help: 'GSC data syncs weekly. If the site is new, it may take a few days for Google to report impressions.',
       };
     }
 
