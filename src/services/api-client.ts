@@ -399,11 +399,12 @@ export class APIClient {
   async resolveSiteAndClient(opts: {
     projectId?: string;
     domain?: string;
-  }): Promise<{ siteId: string; clientId: string } | { error: string }> {
+  }): Promise<{ siteId: string; clientId: string; domain?: string } | { error: string }> {
     const { projectId, domain } = opts;
 
     // Step 1: Resolve client ID
     let clientId: string;
+    let resolvedDomain: string | undefined;
 
     if (projectId) {
       clientId = projectId;
@@ -413,6 +414,7 @@ export class APIClient {
         return { error: `No project found for domain "${domain}". Add this domain in the Rampify dashboard first.` };
       }
       clientId = client.id;
+      resolvedDomain = client.domain;
     } else {
       return { error: 'No domain or project_id specified. Provide domain, project_id, or set SEO_CLIENT_DOMAIN / RAMPIFY_PROJECT_ID env var.' };
     }
@@ -420,14 +422,14 @@ export class APIClient {
     // Step 2: Get site via client → site endpoint
     const site = await this.get<any>(`/api/clients/${clientId}/site`);
     if (site?.id) {
-      return { siteId: site.id, clientId: site.client_id || clientId };
+      return { siteId: site.id, clientId: site.client_id || clientId, domain: resolvedDomain || site.domain };
     }
 
     // Step 3: If projectId was provided, it might be a direct site UUID (not a client ID)
     if (projectId) {
       const siteData = await this.get<any>(`/api/sites/${projectId}`);
       if (siteData?.client_id) {
-        return { siteId: projectId, clientId: siteData.client_id };
+        return { siteId: projectId, clientId: siteData.client_id, domain: siteData.domain };
       }
     }
 

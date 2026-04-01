@@ -53,9 +53,10 @@ export async function crawlSite(params: CrawlSiteParams): Promise<CrawlSiteResul
       return { error: resolved.error };
     }
 
-    const { siteId, clientId } = resolved;
+    const { siteId, clientId, domain: resolvedDomain } = resolved;
+    const displayDomain = resolvedDomain || domain;
 
-    logger.info('Triggering crawl for site', { site_id: siteId, domain });
+    logger.info('Triggering crawl for site', { site_id: siteId, domain: displayDomain });
 
     // Trigger analysis via backend API
     const result = await apiClient.triggerSiteAnalysis(clientId);
@@ -82,7 +83,7 @@ export async function crawlSite(params: CrawlSiteParams): Promise<CrawlSiteResul
 
     return {
       success: result.success,
-      message: `Successfully crawled ${domain}. Found ${result.summary.total_urls} URLs and ${result.summary.issues_found} issues.`,
+      message: `Successfully crawled ${displayDomain}. Found ${result.summary.total_urls} URLs and ${result.summary.issues_found} issues.`,
       summary: {
         total_urls: result.summary.total_urls,
         urls_checked: result.summary.urls_checked,
