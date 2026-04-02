@@ -12,6 +12,7 @@ import { getGSCInsights, GetGSCInsightsInput } from './get-gsc-insights.js';
 import { createFeatureSpec, CreateFeatureSpecInput } from './create-feature-spec.js';
 import { getFeatureSpec, GetFeatureSpecInput } from './get-feature-spec.js';
 import { updateFeatureSpec, UpdateFeatureSpecInput } from './update-feature-spec.js';
+import { listFeatureSpecs, ListFeatureSpecsInput } from './list-feature-specs.js';
 
 export const tools = {
   get_page_seo: {
@@ -414,6 +415,73 @@ Examples:
           },
         },
         required: ['spec_id'],
+      },
+    },
+  },
+
+  list_feature_specs: {
+    handler: listFeatureSpecs,
+    schema: ListFeatureSpecsInput,
+    metadata: {
+      name: 'list_feature_specs',
+      description: `Browse and filter all feature specifications for a project. Returns an overview of specs with status, priority, and task progress.
+
+Use this to answer questions like "what's in progress?", "what's planned?", or "show me all high-priority specs". For full spec details (criteria, tasks, affected files), follow up with get_feature_spec using a spec_id from the results.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when no domain is configured. Uses RAMPIFY_PROJECT_ID env var if not provided.',
+          },
+          status: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['planned', 'in_progress', 'completed', 'verified', 'deprecated'],
+            },
+            description: 'Filter by status (e.g., ["planned", "in_progress"]). Omit to return all.',
+          },
+          priority: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['critical', 'high', 'normal', 'low'],
+            },
+            description: 'Filter by priority. Omit to return all.',
+          },
+          feature_type: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['new_feature', 'enhancement', 'refactor', 'bug_fix'],
+            },
+            description: 'Filter by feature type. Omit to return all.',
+          },
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Filter by tags.',
+          },
+          module: {
+            type: 'string',
+            enum: ['seo', 'security', 'accessibility'],
+            description: 'Filter by source module (e.g., "seo" for SEO scan findings).',
+          },
+          source: {
+            type: 'string',
+            enum: ['user', 'system', 'seo_scan', 'security_scan', 'accessibility_scan'],
+            description: 'Filter by source (e.g., "user" for manual specs, "seo_scan" for findings).',
+          },
+          include_stats: {
+            type: 'boolean',
+            description: 'Include aggregate counts by status and priority (default: false).',
+          },
+        },
       },
     },
   },
