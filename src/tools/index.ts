@@ -13,6 +13,8 @@ import { createFeatureSpec, CreateFeatureSpecInput } from './create-feature-spec
 import { getFeatureSpec, GetFeatureSpecInput } from './get-feature-spec.js';
 import { updateFeatureSpec, UpdateFeatureSpecInput } from './update-feature-spec.js';
 import { listFeatureSpecs, ListFeatureSpecsInput } from './list-feature-specs.js';
+import { linkCommit, LinkCommitInput } from './link-commit.js';
+import { getCommitMessage, GetCommitMessageInput } from './get-commit-message.js';
 
 export const tools = {
   get_page_seo: {
@@ -482,6 +484,92 @@ Use this to answer questions like "what's in progress?", "what's planned?", or "
             description: 'Include aggregate counts by status and priority (default: false).',
           },
         },
+      },
+    },
+  },
+
+  link_commit: {
+    handler: linkCommit,
+    schema: LinkCommitInput,
+    metadata: {
+      name: 'link_commit',
+      description: `Link a git commit SHA to a feature spec and optionally a task. Creates full traceability: code -> commit -> task -> spec.
+
+Deterministic workflow for AI agents:
+1. Retrieve spec via get_feature_spec (spec_id is now in context)
+2. Implement changes and commit code
+3. Run \`git rev-parse HEAD\` to capture the exact SHA
+4. Run \`git remote get-url origin\` and normalize SSH URLs to HTTPS
+5. Call this tool with the SHA, repo_url, and spec_id (and task_id if applicable)
+
+The commit is recorded in the spec's related_commits array and commit_count is incremented. If task_id is provided, the commit is also linked to the task with a last_commit_at timestamp.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when no domain is configured.',
+          },
+          spec_id: {
+            type: 'string',
+            description: 'UUID of the feature spec to link the commit to (required)',
+          },
+          task_id: {
+            type: 'string',
+            description: 'UUID of the specific task to link the commit to. If provided, the commit is linked to both the task and its parent spec.',
+          },
+          commit_sha: {
+            type: 'string',
+            description: 'Git commit SHA to link (from `git rev-parse HEAD` after committing)',
+          },
+          repo_url: {
+            type: 'string',
+            description: 'Repository HTTPS URL (e.g., "https://github.com/owner/repo"). Derive from `git remote get-url origin` and normalize SSH to HTTPS.',
+          },
+        },
+        required: ['spec_id', 'commit_sha'],
+      },
+    },
+  },
+
+  get_commit_message: {
+    handler: getCommitMessage,
+    schema: GetCommitMessageInput,
+    metadata: {
+      name: 'get_commit_message',
+      description: `Generate a conventional-commits-style message from spec/task context. No external AI call — derived from structured spec data already in the database.
+
+Returns a ready-to-use commit message string with type(scope): subject, spec/task references, file list, and co-authorship attribution. Use this before committing to get a well-formatted message.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when no domain is configured.',
+          },
+          spec_id: {
+            type: 'string',
+            description: 'UUID of the feature spec',
+          },
+          task_id: {
+            type: 'string',
+            description: 'UUID of the specific task being completed (recommended for more precise messages)',
+          },
+          files_changed: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'List of files changed in this commit (for the message body)',
+          },
+        },
+        required: ['spec_id'],
       },
     },
   },
