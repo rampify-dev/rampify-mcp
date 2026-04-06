@@ -15,6 +15,7 @@ import { updateFeatureSpec, UpdateFeatureSpecInput } from './update-feature-spec
 import { listFeatureSpecs, ListFeatureSpecsInput } from './list-feature-specs.js';
 import { linkCommit, LinkCommitInput } from './link-commit.js';
 import { getCommitMessage, GetCommitMessageInput } from './get-commit-message.js';
+import { optimizeContent, OptimizeContentInput } from './optimize-content.js';
 
 export const tools = {
   get_page_seo: {
@@ -570,6 +571,37 @@ Returns a ready-to-use commit message string with type(scope): subject, spec/tas
           },
         },
         required: ['spec_id'],
+      },
+    },
+  },
+
+  optimize_content: {
+    handler: optimizeContent,
+    schema: OptimizeContentInput,
+    metadata: {
+      name: 'optimize_content',
+      description: `Generate specific optimization instructions for a page based on its keyword audit results. Runs the content audit, then for each failing check produces actionable fix instructions: add keyword to title, increase density by N occurrences, add internal/external links, vary keyword formatting.
+
+Use this after reviewing a page with get_page_seo to get step-by-step instructions for improving keyword optimization. The AI agent reads these instructions and modifies the source files.
+
+Constraint: instructions preserve content structure (headings, sections, flow). Only text, formatting, and links are modified.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: 'string',
+            description: 'Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.',
+          },
+          project_id: {
+            type: 'string',
+            description: 'Project UUID — use instead of domain when no domain is configured.',
+          },
+          url_path: {
+            type: 'string',
+            description: 'Page URL path to optimize (e.g., "/service-areas/mosquito-control-toronto/")',
+          },
+        },
+        required: ['url_path'],
       },
     },
   },
