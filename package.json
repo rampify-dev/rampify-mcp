@@ -1,7 +1,7 @@
 {
   "name": "@rampify/mcp-server",
-  "version": "0.1.12",
-  "description": "Claude SEO Checker - MCP server for real-time SEO audits in Claude Code and Cursor. Check site health, validate meta tags, integrate Google Search Console, and get AI-powered recommendations.",
+  "version": "0.2.0",
+  "description": "Rampify MCP Server - Spec-driven development with AI SEO intelligence. Create feature specs, run site audits, optimize content, track keywords, and query Google Search Console from Claude Code, Cursor, and Windsurf.",
   "main": "build/index.js",
   "type": "module",
   "bin": {
