@@ -235,6 +235,7 @@ export async function optimizeContent(params: OptimizeContentParams): Promise<an
       audit_score: pageResult.score,
       total_instructions: instructions.length,
       constraint: 'DO NOT change the content structure (headings, sections, page flow). Only modify text within existing sections, add formatting, and add links.',
+      next_steps: 'After implementing these changes: 1) Deploy the updated page. 2) Scan the page using the single-page scan button in Rampify. The scan will verify all keyword checks pass, auto-verify the findings spec, and automatically submit the page for re-indexing to Google, Bing, and other search engines.',
       instructions,
       keywords_audited: keywords.map((kw: any) => ({
         keyword: kw.keyword,
