@@ -16,6 +16,7 @@ import { listFeatureSpecs, ListFeatureSpecsInput } from './list-feature-specs.js
 import { linkCommit, LinkCommitInput } from './link-commit.js';
 import { getCommitMessage, GetCommitMessageInput } from './get-commit-message.js';
 import { optimizeContent, OptimizeContentInput } from './optimize-content.js';
+import { createKeywordCluster, CreateKeywordClusterInput, getKeywordClusters, GetKeywordClustersInput } from './keyword-clusters.js';
 
 export const tools = {
   get_page_seo: {
@@ -571,6 +572,51 @@ Returns a ready-to-use commit message string with type(scope): subject, spec/tas
           },
         },
         required: ['spec_id'],
+      },
+    },
+  },
+
+  create_keyword_cluster: {
+    handler: createKeywordCluster,
+    schema: CreateKeywordClusterInput,
+    metadata: {
+      name: 'create_keyword_cluster',
+      description: `Create a strategic keyword cluster that groups related keywords sharing search intent. Each cluster is a content brief with: strategic rationale, competitive landscape, target content type, and keyword assignments.
+
+Use this during keyword research conversations to organize findings into actionable clusters. Each cluster maps to one page and guides content creation.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
+          project_id: { type: 'string', description: 'Project UUID.' },
+          name: { type: 'string', description: 'Cluster name (e.g., "Pain Point / Problem-Aware")' },
+          description: { type: 'string', description: 'Strategic rationale — why target this cluster?' },
+          priority: { type: 'string', enum: ['critical', 'high', 'normal', 'low'], description: 'Cluster priority' },
+          competitive_landscape: { type: 'string', description: 'What currently ranks, competitors, positioning gaps' },
+          notes: { type: 'string', description: 'Free-form strategic notes' },
+          target_content_type: { type: 'string', description: 'Content type: blog_post, landing_page, guide, authority_page, tool_page, feature_page' },
+          target_url: { type: 'string', description: 'Target page URL path. Leave empty if page needs creation.' },
+          keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign (must exist in target keywords)' },
+        },
+        required: ['name'],
+      },
+    },
+  },
+
+  get_keyword_clusters: {
+    handler: getKeywordClusters,
+    schema: GetKeywordClustersInput,
+    metadata: {
+      name: 'get_keyword_clusters',
+      description: `Retrieve all keyword clusters for a project with their keywords, volume data, and strategic context. Each cluster includes: name, rationale, priority, competitive landscape, target content type, target URL, and assigned keywords with search volumes.
+
+Use this to understand the keyword strategy, see what content needs to be created, and guide site building based on cluster briefs.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
+          project_id: { type: 'string', description: 'Project UUID.' },
+        },
       },
     },
   },
