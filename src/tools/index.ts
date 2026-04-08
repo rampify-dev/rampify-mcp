@@ -596,7 +596,7 @@ Use this during keyword research conversations to organize findings into actiona
           notes: { type: 'string', description: 'Free-form strategic notes' },
           target_content_type: { type: 'string', description: 'Content type: blog_post, landing_page, guide, authority_page, tool_page, feature_page' },
           target_url: { type: 'string', description: 'Target page URL path. Leave empty if page needs creation.' },
-          keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign (must exist in target keywords)' },
+          keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign. New keywords are auto-created.' },
         },
         required: ['name'],
       },

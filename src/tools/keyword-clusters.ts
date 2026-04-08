@@ -56,7 +56,7 @@ export const CreateKeywordClusterInput = z.object({
     .array(z.string())
     .optional()
     .default([])
-    .describe('Keywords to assign to this cluster (must already exist in target keywords)'),
+    .describe('Keywords to assign to this cluster. New keywords are auto-created as target keywords.'),
 });
 
 export type CreateKeywordClusterParams = z.infer<typeof CreateKeywordClusterInput>;
@@ -110,7 +110,8 @@ export async function createKeywordCluster(params: CreateKeywordClusterParams): 
         priority: data.cluster.priority,
         status: data.cluster.status,
         target_content_type: data.cluster.target_content_type,
-        keywords_assigned: params.keywords?.length || 0,
+        keywords_assigned: data.keywords_assigned || 0,
+        keywords_created: data.keywords_created || 0,
       },
     };
   } catch (error: any) {
