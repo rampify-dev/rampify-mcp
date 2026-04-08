@@ -598,7 +598,7 @@ Use this during keyword research conversations to organize findings into actiona
           competitive_landscape: { type: 'string', description: 'What currently ranks, competitors, positioning gaps' },
           notes: { type: 'string', description: 'Free-form strategic notes' },
           target_content_type: { type: 'string', description: 'Content type: blog_post, landing_page, guide, authority_page, tool_page, feature_page' },
-          target_url: { type: 'string', description: 'Target page URL path. Leave empty if page needs creation.' },
+          target_url: { type: 'string', description: 'Proposed SEO-optimized URL path for this content (e.g., "/blog/why-ai-websites-look-the-same"). Always propose a URL based on the primary keyword and content type, even if the page does not exist yet.' },
           keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign. New keywords are auto-created.' },
           primary_keyword: { type: 'string', description: 'The head term for this cluster — set as primary tier. All other keywords default to secondary.' },
         },

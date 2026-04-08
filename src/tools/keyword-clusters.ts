@@ -51,7 +51,7 @@ export const CreateKeywordClusterInput = z.object({
   target_url: z
     .string()
     .optional()
-    .describe('Target page URL path (e.g., "/blog/my-post"). Leave empty if page needs to be created.'),
+    .describe('Proposed SEO-optimized URL path (e.g., "/blog/why-ai-websites-look-the-same"). Always propose a URL based on the primary keyword and content type.'),
   keywords: z
     .array(z.string())
     .optional()
