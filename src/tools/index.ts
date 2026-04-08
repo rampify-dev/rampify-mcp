@@ -581,7 +581,9 @@ Returns a ready-to-use commit message string with type(scope): subject, spec/tas
     schema: CreateKeywordClusterInput,
     metadata: {
       name: 'create_keyword_cluster',
-      description: `Create a strategic keyword cluster that groups related keywords sharing search intent. Each cluster is a content brief with: strategic rationale, competitive landscape, target content type, and keyword assignments.
+      description: `Create a strategic keyword cluster with its keywords in a single call. Each cluster groups related keywords sharing search intent and serves as a content brief with: strategic rationale, competitive landscape, target content type, and keyword assignments.
+
+Always include the keywords array — keywords that don't exist yet are auto-created as target keywords. Returns keywords_assigned and keywords_created counts to confirm what was added.
 
 Use this during keyword research conversations to organize findings into actionable clusters. Each cluster maps to one page and guides content creation.`,
       inputSchema: {
