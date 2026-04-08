@@ -57,6 +57,10 @@ export const CreateKeywordClusterInput = z.object({
     .optional()
     .default([])
     .describe('Keywords to assign to this cluster. New keywords are auto-created as target keywords.'),
+  primary_keyword: z
+    .string()
+    .optional()
+    .describe('The head term for this cluster — set as primary tier. All other keywords default to secondary.'),
 });
 
 export type CreateKeywordClusterParams = z.infer<typeof CreateKeywordClusterInput>;
@@ -93,6 +97,7 @@ export async function createKeywordCluster(params: CreateKeywordClusterParams): 
         target_content_type: params.target_content_type || undefined,
         target_url: params.target_url || undefined,
         keywords: params.keywords,
+        primary_keyword: params.primary_keyword || undefined,
       }
     );
 

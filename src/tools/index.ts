@@ -17,6 +17,7 @@ import { linkCommit, LinkCommitInput } from './link-commit.js';
 import { getCommitMessage, GetCommitMessageInput } from './get-commit-message.js';
 import { optimizeContent, OptimizeContentInput } from './optimize-content.js';
 import { createKeywordCluster, CreateKeywordClusterInput, getKeywordClusters, GetKeywordClustersInput } from './keyword-clusters.js';
+import { lookupKeywords, LookupKeywordsInput, suggestKeywords, SuggestKeywordsInput } from './keyword-research.js';
 
 export const tools = {
   get_page_seo: {
@@ -599,6 +600,7 @@ Use this during keyword research conversations to organize findings into actiona
           target_content_type: { type: 'string', description: 'Content type: blog_post, landing_page, guide, authority_page, tool_page, feature_page' },
           target_url: { type: 'string', description: 'Target page URL path. Leave empty if page needs creation.' },
           keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign. New keywords are auto-created.' },
+          primary_keyword: { type: 'string', description: 'The head term for this cluster — set as primary tier. All other keywords default to secondary.' },
         },
         required: ['name'],
       },
@@ -619,6 +621,55 @@ Use this to understand the keyword strategy, see what content needs to be create
           domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
           project_id: { type: 'string', description: 'Project UUID.' },
         },
+      },
+    },
+  },
+
+  lookup_keywords: {
+    handler: lookupKeywords,
+    schema: LookupKeywordsInput,
+    metadata: {
+      name: 'lookup_keywords',
+      description: `Look up search volume, competition, CPC, and monthly trends for a list of keywords using DataForSEO. Results are cached for 30 days — repeated lookups for the same keywords are free.
+
+IMPORTANT: This calls a paid API. The response includes meta.from_cache and meta.from_api counts so you can see what hit the paid API vs cache. Always tell the user before calling this tool and how many keywords you're looking up.
+
+Use this to validate keyword demand during research conversations, before creating clusters.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
+          project_id: { type: 'string', description: 'Project UUID.' },
+          keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to look up (max 100). e.g., ["seo audit tool", "free seo checker"]' },
+          locale: { type: 'string', description: 'Language locale (default: "en")' },
+          location_code: { type: 'number', description: 'DataForSEO location code (default: 2840 = US). Canada: 2124, UK: 2826.' },
+        },
+        required: ['keywords'],
+      },
+    },
+  },
+
+  suggest_keywords: {
+    handler: suggestKeywords,
+    schema: SuggestKeywordsInput,
+    metadata: {
+      name: 'suggest_keywords',
+      description: `Get related keyword suggestions for a seed keyword using DataForSEO. Returns up to 50 related keywords with search volume and competition data.
+
+IMPORTANT: This calls a paid API. Always tell the user before calling this tool and what seed keyword you're using.
+
+Use this to expand keyword research — find related terms, long-tail variations, and new cluster candidates.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
+          project_id: { type: 'string', description: 'Project UUID.' },
+          seed: { type: 'string', description: 'Seed keyword to get suggestions for (e.g., "seo audit")' },
+          locale: { type: 'string', description: 'Language locale (default: "en")' },
+          location_code: { type: 'number', description: 'DataForSEO location code (default: 2840 = US). Canada: 2124, UK: 2826.' },
+          limit: { type: 'number', description: 'Max suggestions to return (default: 50)' },
+        },
+        required: ['seed'],
       },
     },
   },
