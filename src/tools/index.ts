@@ -16,7 +16,7 @@ import { listFeatureSpecs, ListFeatureSpecsInput } from './list-feature-specs.js
 import { linkCommit, LinkCommitInput } from './link-commit.js';
 import { getCommitMessage, GetCommitMessageInput } from './get-commit-message.js';
 import { optimizeContent, OptimizeContentInput } from './optimize-content.js';
-import { createKeywordCluster, CreateKeywordClusterInput, getKeywordClusters, GetKeywordClustersInput } from './keyword-clusters.js';
+import { createKeywordCluster, CreateKeywordClusterInput, getKeywordClusters, GetKeywordClustersInput, createContentSpec, CreateContentSpecInput } from './keyword-clusters.js';
 import { lookupKeywords, LookupKeywordsInput, suggestKeywords, SuggestKeywordsInput } from './keyword-research.js';
 
 export const tools = {
@@ -621,6 +621,35 @@ Use this to understand the keyword strategy, see what content needs to be create
           domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
           project_id: { type: 'string', description: 'Project UUID.' },
         },
+      },
+    },
+  },
+
+  create_content_spec: {
+    handler: createContentSpec,
+    schema: CreateContentSpecInput,
+    metadata: {
+      name: 'create_content_spec',
+      description: `Create a page-type feature spec linked to a keyword cluster. The spec carries the content strategy (outline, goals, voice, inspiration); keyword data is resolved dynamically from the cluster at read time.
+
+Use this after creating keyword clusters to generate actionable content briefs. Each cluster maps to one page — the spec tells an AI agent exactly what to build. The spec auto-creates tasks: write content, optimize for keywords, add schema/meta.
+
+The response includes the spec_id. Use get_feature_spec with that ID to retrieve the full spec with live keyword data, volumes, and GSC performance.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
+          project_id: { type: 'string', description: 'Project UUID.' },
+          cluster_id: { type: 'string', description: 'The keyword cluster ID to create a content spec for.' },
+          title: { type: 'string', description: 'Custom spec title. Auto-generated from cluster if omitted.' },
+          description: { type: 'string', description: 'Content strategy overview — what this page should accomplish.' },
+          outline: { type: 'string', description: 'Proposed content outline — sections, key points, structure.' },
+          goals: { type: 'string', description: 'Goals — traffic targets, conversion intent, ranking targets.' },
+          inspiration: { type: 'string', description: 'Reference links — content to model or differentiate from.' },
+          voice_notes: { type: 'string', description: 'Voice and tone guidance.' },
+          priority: { type: 'string', enum: ['critical', 'high', 'normal', 'low'], description: 'Spec priority. Defaults to cluster priority.' },
+        },
+        required: ['cluster_id'],
       },
     },
   },

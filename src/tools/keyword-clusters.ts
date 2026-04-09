@@ -200,3 +200,103 @@ export async function getKeywordClusters(params: GetKeywordClustersParams): Prom
     return { error: `Failed to get keyword clusters: ${message}` };
   }
 }
+
+// ─── Create Content Spec from Cluster ───────────────────────────────────────
+
+export const CreateContentSpecInput = z.object({
+  domain: z
+    .string()
+    .optional()
+    .describe('Site domain (e.g., "example.com"). Uses SEO_CLIENT_DOMAIN env var if not provided.'),
+  project_id: z
+    .string()
+    .optional()
+    .describe('Project UUID — use instead of domain when no domain is configured.'),
+  cluster_id: z
+    .string()
+    .describe('The keyword cluster ID to create a content spec for.'),
+  title: z
+    .string()
+    .optional()
+    .describe('Custom spec title. If omitted, auto-generated from cluster name and content type (e.g., "Blog Post: Why AI Websites Look the Same").'),
+  description: z
+    .string()
+    .optional()
+    .describe('Content strategy overview — what this page should accomplish and why.'),
+  outline: z
+    .string()
+    .optional()
+    .describe('Proposed content outline — sections, key points, structure.'),
+  goals: z
+    .string()
+    .optional()
+    .describe('Goals for this content — traffic targets, conversion intent, ranking targets.'),
+  inspiration: z
+    .string()
+    .optional()
+    .describe('Inspiration and reference links — content to model or differentiate from.'),
+  voice_notes: z
+    .string()
+    .optional()
+    .describe('Voice and tone guidance — how should this content sound?'),
+  priority: z
+    .enum(['critical', 'high', 'normal', 'low'])
+    .optional()
+    .describe('Spec priority. Defaults to the cluster priority.'),
+});
+
+export type CreateContentSpecParams = z.infer<typeof CreateContentSpecInput>;
+
+export async function createContentSpec(params: CreateContentSpecParams): Promise<any> {
+  if (!params.cluster_id) {
+    return { error: 'cluster_id is required.' };
+  }
+
+  const domain = params.domain || config.defaultDomain;
+
+  logger.info('Creating content spec from cluster', { domain, clusterId: params.cluster_id });
+
+  try {
+    const resolved = await apiClient.resolveSiteAndClient({
+      projectId: params.project_id || config.defaultProjectId,
+      domain,
+    });
+
+    if ('error' in resolved) {
+      return { error: resolved.error };
+    }
+
+    const { siteId } = resolved;
+
+    const data = await apiClient.post<any>(
+      `/api/sites/${siteId}/keyword-clusters/${params.cluster_id}/create-spec`,
+      {
+        title: params.title || undefined,
+        description: params.description || undefined,
+        outline: params.outline || undefined,
+        goals: params.goals || undefined,
+        inspiration: params.inspiration || undefined,
+        voice_notes: params.voice_notes || undefined,
+        priority: params.priority || undefined,
+      }
+    );
+
+    if (!data?.success) {
+      return { error: data?.error ?? 'Failed to create content spec.' };
+    }
+
+    logger.info('Content spec created', { specId: data.spec?.id, clusterId: params.cluster_id });
+
+    return {
+      success: true,
+      spec: data.spec,
+      message: `Created page spec "${data.spec.title}" linked to cluster. Use get_feature_spec with spec_id "${data.spec.id}" to retrieve the full spec with live keyword data.`,
+    };
+  } catch (error: any) {
+    logger.error('Failed to create content spec', error);
+    const message =
+      error?.response?.data?.error ||
+      (error instanceof Error ? error.message : 'Unknown error');
+    return { error: `Failed to create content spec: ${message}` };
+  }
+}
