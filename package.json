@@ -1,6 +1,6 @@
 {
   "name": "@rampify/mcp-server",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Rampify MCP Server - Spec-driven development with AI SEO intelligence. Create feature specs, run site audits, optimize content, track keywords, and query Google Search Console from Claude Code, Cursor, and Windsurf.",
   "main": "build/index.js",
   "type": "module",
