@@ -612,14 +612,17 @@ Use this during keyword research conversations to organize findings into actiona
     schema: GetKeywordClustersInput,
     metadata: {
       name: 'get_keyword_clusters',
-      description: `Retrieve all keyword clusters for a project with their keywords, volume data, and strategic context. Each cluster includes: name, rationale, priority, competitive landscape, target content type, target URL, and assigned keywords with search volumes.
+      description: `Retrieve keyword clusters with keywords, volume data, GSC performance, and audit status. Supports filtering by target_url (exact match), name (partial match), or cluster_id.
 
-Use this to understand the keyword strategy, see what content needs to be created, and guide site building based on cluster briefs.`,
+Use target_url to find the cluster for a specific page (e.g., target_url: "/" for the homepage cluster). Without filters, returns all clusters.`,
       inputSchema: {
         type: 'object',
         properties: {
           domain: { type: 'string', description: 'Site domain. Uses SEO_CLIENT_DOMAIN if not provided.' },
           project_id: { type: 'string', description: 'Project UUID.' },
+          target_url: { type: 'string', description: 'Filter by target URL path (e.g., "/" for homepage)' },
+          name: { type: 'string', description: 'Filter by cluster name (partial match)' },
+          cluster_id: { type: 'string', description: 'Filter by specific cluster ID' },
         },
       },
     },

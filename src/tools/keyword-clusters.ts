@@ -139,6 +139,18 @@ export const GetKeywordClustersInput = z.object({
     .string()
     .optional()
     .describe('Project UUID — use instead of domain when no domain is configured.'),
+  target_url: z
+    .string()
+    .optional()
+    .describe('Filter by target URL path (e.g., "/" for homepage cluster)'),
+  name: z
+    .string()
+    .optional()
+    .describe('Filter by cluster name (partial match)'),
+  cluster_id: z
+    .string()
+    .optional()
+    .describe('Filter by specific cluster ID'),
 });
 
 export type GetKeywordClustersParams = z.infer<typeof GetKeywordClustersInput>;
@@ -160,7 +172,13 @@ export async function getKeywordClusters(params: GetKeywordClustersParams): Prom
 
     const { siteId } = resolved;
 
-    const data = await apiClient.get<any>(`/api/sites/${siteId}/keyword-clusters`);
+    const queryParams = new URLSearchParams();
+    if (params.target_url) queryParams.set('target_url', params.target_url);
+    if (params.name) queryParams.set('name', params.name);
+    if (params.cluster_id) queryParams.set('cluster_id', params.cluster_id);
+    const qs = queryParams.toString();
+
+    const data = await apiClient.get<any>(`/api/sites/${siteId}/keyword-clusters${qs ? `?${qs}` : ''}`);
 
     if (!data) {
       return { error: 'Failed to fetch clusters.' };
