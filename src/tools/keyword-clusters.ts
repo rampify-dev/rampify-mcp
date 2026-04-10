@@ -53,10 +53,16 @@ export const CreateKeywordClusterInput = z.object({
     .optional()
     .describe('Proposed SEO-optimized URL path (e.g., "/blog/why-ai-websites-look-the-same"). Always propose a URL based on the primary keyword and content type.'),
   keywords: z
-    .array(z.string())
+    .array(z.union([
+      z.string(),
+      z.object({
+        keyword: z.string(),
+        tier: z.enum(['primary', 'secondary', 'tertiary']).optional(),
+      }),
+    ]))
     .optional()
     .default([])
-    .describe('Keywords to assign to this cluster. New keywords are auto-created as target keywords.'),
+    .describe('Keywords to assign. Accepts strings (default secondary) or {keyword, tier} objects for per-keyword tier control. tertiary = tracking/long-tail (no placement requirements).'),
   primary_keyword: z
     .string()
     .optional()

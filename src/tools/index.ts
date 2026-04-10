@@ -599,7 +599,7 @@ Use this during keyword research conversations to organize findings into actiona
           notes: { type: 'string', description: 'Free-form strategic notes' },
           target_content_type: { type: 'string', description: 'Content type: blog_post, landing_page, guide, authority_page, tool_page, feature_page' },
           target_url: { type: 'string', description: 'Proposed SEO-optimized URL path for this content (e.g., "/blog/why-ai-websites-look-the-same"). Always propose a URL based on the primary keyword and content type, even if the page does not exist yet.' },
-          keywords: { type: 'array', items: { type: 'string' }, description: 'Keywords to assign. New keywords are auto-created.' },
+          keywords: { type: 'array', items: { oneOf: [{ type: 'string' }, { type: 'object', properties: { keyword: { type: 'string' }, tier: { type: 'string', enum: ['primary', 'secondary', 'tertiary'] } }, required: ['keyword'] }] }, description: 'Keywords to assign. Strings default to secondary. Use {keyword, tier} for per-keyword control. tertiary = tracking/long-tail (no placement audit requirements).' },
           primary_keyword: { type: 'string', description: 'The head term for this cluster — set as primary tier. All other keywords default to secondary.' },
         },
         required: ['name'],
