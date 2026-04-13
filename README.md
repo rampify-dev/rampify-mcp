@@ -1,12 +1,57 @@
-# Rampify MCP Server - Claude SEO Checker
+# Rampify MCP Server
+
+> **This npm package is deprecated.** Use the hosted remote server instead — zero install, always up to date, more tools.
+>
+> **[Setup Guide →](https://www.rampify.dev/docs/integrations/mcp-server)**
+
+## Migrate to the Remote Server
+
+The Rampify MCP server now runs remotely at `https://www.rampify.dev/api/mcp`. No packages to install.
+
+**Claude Code:**
+```bash
+claude mcp add --transport http rampify \
+  https://www.rampify.dev/api/mcp \
+  --header "Authorization: Bearer sk_live_your_api_key_here"
+```
+
+**Cursor / VS Code** (`.cursor/mcp.json` or `.vscode/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "rampify": {
+      "type": "http",
+      "url": "https://www.rampify.dev/api/mcp",
+      "headers": {
+        "Authorization": "Bearer sk_live_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+**Claude Web:** Go to [claude.ai](https://claude.ai) → Customize → Connectors → Add custom connector with URL `https://www.rampify.dev/api/mcp`
+
+Get your API key at [rampify.dev/settings/api-keys](https://www.rampify.dev/settings/api-keys).
+
+---
+
+## Why the remote server?
+
+- **24 tools** vs 6 in this npm package
+- **Always up to date** — no version management
+- **Zero install** — just a URL and your API key
+- **Multi-project support** via `X-Rampify-Project` header
+
+This package remains available for existing users but will not receive new versions.
+
+---
+
+## Previous README
 
 [![Website](https://img.shields.io/badge/Website-rampify.dev-blue)](https://www.rampify.dev)
-[![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.rampify.dev/docs/mcp-server)
+[![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.rampify.dev/docs/integrations/mcp-server)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-**Turn Claude Code into a powerful SEO checker.** Real-time site audits, Google Search Console integration, and AI-powered recommendations directly in your editor (Cursor, Claude Code).
-
-**[Get Started with Rampify →](https://www.rampify.dev)**
 
 ## What is a Claude SEO Checker?
 
