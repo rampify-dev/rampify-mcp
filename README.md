@@ -1,7 +1,5 @@
 # Rampify MCP Server
 
-[![Glama score](https://glama.ai/mcp/servers/rampify-dev/rampify-mcp/badges/score.svg)](https://glama.ai/mcp/servers/rampify-dev/rampify-mcp)
-
 **The SEO MCP server that acts on your data.** Connect Rampify to Claude Code, Cursor, or any MCP client and your agent crawls your site, synthesizes the gaps, writes the fix as a spec, and ships it. One connection, grounded in your actual site.
 
 [Website](https://www.rampify.dev) · [Product](https://www.rampify.dev/mcp) · [Docs](https://www.rampify.dev/docs/mcp) · [Connect](https://www.rampify.dev/docs/mcp/connecting)
