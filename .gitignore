@@ -41,3 +41,7 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+# MCP Registry signing key (mcp-publisher login dns); never commit
+key.pem
+*.pem
