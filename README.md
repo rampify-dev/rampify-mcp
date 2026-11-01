@@ -1,46 +1,71 @@
 # Rampify MCP Server
 
-**The SEO MCP server that acts on your data.** Connect Rampify to Claude Code, Cursor, or any MCP client and your agent crawls your site, synthesizes the gaps, writes the fix as a spec, and ships it. One connection, grounded in your actual site.
+**Turn your coding agent into a marketing agent.** Rampify connects Claude Code, Cursor, GitHub Copilot, or any MCP client to your website's search data. It scans your site, writes what to fix or build as specs your agent ships, and confirms each fix on the next scan, across Google search and AI answers.
 
 [Website](https://www.rampify.dev) · [Product](https://www.rampify.dev/seo-mcp) · [Docs](https://www.rampify.dev/docs/mcp) · [Connect](https://www.rampify.dev/docs/mcp/connecting)
 
-> **Your website is your product. Ship it like one.** Rampify brings your dev workflow (observe, spec, build, verify, iterate) to your website's search and AI-answer visibility, inside the coding agent you already use.
+## How it works
 
-## Why Rampify is different
+1. **Scan.** Rampify crawls your site and reads your Google Search Console performance and keyword data.
+2. **Spec.** Each gap becomes a spec: the pages and files it affects, the tasks, and how to tell it's done.
+3. **Ship.** Your agent makes the change in your repo and links the commit to the spec.
+4. **Verify.** The next scan checks the fix and closes the spec, or reopens it if the problem comes back.
 
-Most SEO MCP servers are read-only data faucets. Rampify does the whole job in one connection: it pulls the data, finds the gaps, writes the fix as a spec, and your agent ships it (a PR to your repo, or a publish through your CMS's MCP).
+## Why Rampify
 
-- **Batteries included.** Rampify retrieves keyword data (via DataForSEO) and your Google Search Console performance built in, plus a live crawl of your own site. No separate data servers to bolt on.
-- **It acts, not just reads.** Generate titles, meta, and JSON-LD schema grounded in that data, then open the PR.
-- **Track it like you track code.** Findings become feature specs with affected URLs and tasks, then link the commits that resolve them, so marketing work has the same paper trail as your engineering.
-- **Find your blind spots.** Discovery research runs as your buyer and shows where you're invisible when people ask AI assistants about your category.
+- **Real data, built in.** Keyword volumes (via DataForSEO), your Search Console performance, and a live crawl of your own site. No separate data servers to bolt on.
+- **Specs, not suggestions.** Findings arrive as work your agent can pick up, with the same paper trail as your engineering: tasks, commits, and a status you can trust.
+- **Fixes are checked, not assumed.** A spec is done when the next scan confirms it, not when someone says so.
+- **Find your blind spots.** Playbooks like the Category Visibility Check ask AI assistants the questions your buyers ask, show whether they name you, and file a spec for the biggest gap.
 
 ## Connect
 
-The Rampify MCP server is remote, hosted at `https://www.rampify.dev/api/mcp`. No install, nothing to keep updated, new tools appear automatically. Connect over OAuth, with no API keys to manage:
+Rampify is a remote server at `https://www.rampify.dev/api/mcp`. Nothing to install or update, and you sign in with OAuth, so there are no API keys to manage.
 
-- **Cursor / VS Code:** one-click add
-- **Claude Code / Claude Desktop:** paste one command
-- **claude.ai:** add as a custom connector by URL
+**Claude Code**
 
 ```bash
-# Claude Code (OAuth prompts on first connect)
 claude mcp add --transport http rampify https://www.rampify.dev/api/mcp
 ```
 
-Full per-client instructions: **[Connecting guide →](https://www.rampify.dev/docs/mcp/connecting)**
+**Cursor** (`.cursor/mcp.json`), or any client that takes a URL
+
+```json
+{
+  "mcpServers": {
+    "rampify": { "url": "https://www.rampify.dev/api/mcp" }
+  }
+}
+```
+
+**VS Code and GitHub Copilot:** install the [Rampify extension](https://marketplace.visualstudio.com/items?itemName=rampify.rampify). It connects Copilot in one click and shows your specs in the sidebar.
+
+**claude.ai:** add a custom connector with the URL above.
+
+Step-by-step for each client: **[Connecting guide →](https://www.rampify.dev/docs/mcp/connecting)**
+
+## Things to ask once you're connected
+
+- "Crawl my site and show me which pages are invisible when buyers ask AI assistants about my category."
+- "Research keywords for /pricing, then write the content spec."
+- "Audit the meta and schema on my top pages, and open a PR with the fixes."
+- "What should I work on next?"
 
 ## What your agent can do
 
-Crawl and scan your site (meta, schema, content, Core Web Vitals), look up keyword volume and trends, pull Search Console performance, generate optimized meta tags and JSON-LD schema, run Discovery research on your AI-answer visibility, turn findings into feature specs, and open PRs. See the **[full tool catalog →](https://www.rampify.dev/docs/mcp)**.
+More than 50 tools: crawl and scan pages (meta, schema, content, Core Web Vitals), page-level intelligence, Search Console performance, keyword research and clusters, title, meta and JSON-LD generation, feature specs with tasks and linked commits, research playbooks, and campaign tracking. See the **[full tool catalog →](https://www.rampify.dev/docs/mcp)**.
 
 ## Learn more
 
 - **Product:** https://www.rampify.dev/seo-mcp
 - **Tool catalog:** https://www.rampify.dev/docs/mcp
 - **Connecting guide:** https://www.rampify.dev/docs/mcp/connecting
-- **Rampify:** https://www.rampify.dev
+- **Pricing (free to start):** https://www.rampify.dev/pricing
+
+## About this repo
+
+This repo holds Rampify's public listing metadata: `server.json` for the [official MCP Registry](https://registry.modelcontextprotocol.io) (`dev.rampify/rampify-mcp`), the Cursor plugin manifest (`.cursor-plugin/`, `mcp.json`), and `glama.json`. The server itself runs at rampify.dev.
 
 ---
 
-<sub>Looking for the old <code>@rampify/mcp-server</code> npm package? It is deprecated in favor of the hosted remote server above (zero install, always current). The source in this repo is kept for historical reference.</sub>
+<sub>Looking for the old <code>@rampify/mcp-server</code> npm package? It is deprecated in favor of the hosted remote server above (zero install, always current). Its source is kept here for reference.</sub>
