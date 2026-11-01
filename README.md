@@ -2,7 +2,7 @@
 
 **The SEO MCP server that acts on your data.** Connect Rampify to Claude Code, Cursor, or any MCP client and your agent crawls your site, synthesizes the gaps, writes the fix as a spec, and ships it. One connection, grounded in your actual site.
 
-[Website](https://www.rampify.dev) · [Product](https://www.rampify.dev/mcp) · [Docs](https://www.rampify.dev/docs/mcp) · [Connect](https://www.rampify.dev/docs/mcp/connecting)
+[Website](https://www.rampify.dev) · [Product](https://www.rampify.dev/seo-mcp) · [Docs](https://www.rampify.dev/docs/mcp) · [Connect](https://www.rampify.dev/docs/mcp/connecting)
 
 > **Your website is your product. Ship it like one.** Rampify brings your dev workflow (observe, spec, build, verify, iterate) to your website's search and AI-answer visibility, inside the coding agent you already use.
 
@@ -36,7 +36,7 @@ Crawl and scan your site (meta, schema, content, Core Web Vitals), look up keywo
 
 ## Learn more
 
-- **Product:** https://www.rampify.dev/mcp
+- **Product:** https://www.rampify.dev/seo-mcp
 - **Tool catalog:** https://www.rampify.dev/docs/mcp
 - **Connecting guide:** https://www.rampify.dev/docs/mcp/connecting
 - **Rampify:** https://www.rampify.dev
