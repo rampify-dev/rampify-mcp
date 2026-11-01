@@ -1,0 +1,11 @@
+{
+  "name": "rampify",
+  "displayName": "Rampify",
+  "description": "Turn your coding agent into a marketing agent: search data, specs to build, fixes verified by scan.",
+  "version": "1.1.0",
+  "author": { "name": "Rampify", "url": "https://www.rampify.dev" },
+  "homepage": "https://www.rampify.dev/seo-mcp",
+  "repository": "https://github.com/rampify-dev/rampify-mcp",
+  "license": "MIT",
+  "keywords": ["seo", "marketing", "analytics", "search-console", "mcp"]
+}
