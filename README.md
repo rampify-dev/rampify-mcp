@@ -68,4 +68,4 @@ This repo holds Rampify's public listing metadata: `server.json` for the [offici
 
 ---
 
-<sub>Looking for the old <code>@rampify/mcp-server</code> npm package? It is deprecated in favor of the hosted remote server above (zero install, always current). Its source is kept here for reference.</sub>
+<sub>Looking for the old <code>@rampify/mcp-server</code> npm package? It is deprecated in favor of the hosted remote server above (zero install, always current). Its source is in this repo's history, last at <a href="https://github.com/rampify-dev/rampify-mcp/tree/9e160f0"><code>9e160f0</code></a>.</sub>
