@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "rampify": {
+      "url": "https://www.rampify.dev/api/mcp"
+    }
+  }
+}
