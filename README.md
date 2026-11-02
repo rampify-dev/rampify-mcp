@@ -38,6 +38,23 @@ claude mcp add --transport http rampify https://www.rampify.dev/api/mcp
 }
 ```
 
+**Cline:** open the MCP Servers panel, choose **Remote Servers**, name it `rampify`, paste the URL above, pick **Streamable HTTP**, and click **Add Server**. Then sign in to Rampify when your browser opens. Or add it to `cline_mcp_settings.json` (MCP Servers → Configure → Configure MCP Servers):
+
+```json
+{
+  "mcpServers": {
+    "rampify": {
+      "type": "streamableHttp",
+      "url": "https://www.rampify.dev/api/mcp",
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+Set `"type": "streamableHttp"`: without it, Cline falls back to the legacy SSE transport.
+
 **VS Code and GitHub Copilot:** install the [Rampify extension](https://marketplace.visualstudio.com/items?itemName=rampify.rampify). It connects Copilot in one click and shows your specs in the sidebar.
 
 **claude.ai:** add a custom connector with the URL above.
@@ -64,7 +81,7 @@ More than 50 tools: crawl and scan pages (meta, schema, content, Core Web Vitals
 
 ## About this repo
 
-This repo holds Rampify's public listing metadata: `server.json` for the [official MCP Registry](https://registry.modelcontextprotocol.io) (`dev.rampify/rampify-mcp`), the Cursor plugin manifest (`.cursor-plugin/`, `mcp.json`), and `glama.json`. The server itself runs at rampify.dev.
+This repo holds Rampify's public listing metadata: `server.json` for the [official MCP Registry](https://registry.modelcontextprotocol.io) (`dev.rampify/rampify-mcp`), the Cursor plugin manifest (`.cursor-plugin/`, `mcp.json`), `glama.json`, and `llms-install.md`, the setup notes AI agents such as Cline read. The server itself runs at rampify.dev.
 
 ---
 
